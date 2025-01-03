@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/YahyaElKenani/The-Budget-Tracker.git/static/css/main.e3d67702.css",
-    "main.js": "/YahyaElKenani/The-Budget-Tracker.git/static/js/main.208ce0a6.js",
-    "index.html": "/YahyaElKenani/The-Budget-Tracker.git/index.html",
-    "main.e3d67702.css.map": "/YahyaElKenani/The-Budget-Tracker.git/static/css/main.e3d67702.css.map",
-    "main.208ce0a6.js.map": "/YahyaElKenani/The-Budget-Tracker.git/static/js/main.208ce0a6.js.map"
+    "main.css": "/The-Budget-Tracker/static/css/main.e3d67702.css",
+    "main.js": "/The-Budget-Tracker/static/js/main.208ce0a6.js",
+    "index.html": "/The-Budget-Tracker/index.html",
+    "main.e3d67702.css.map": "/The-Budget-Tracker/static/css/main.e3d67702.css.map",
+    "main.208ce0a6.js.map": "/The-Budget-Tracker/static/js/main.208ce0a6.js.map"
   },
   "entrypoints": [
     "static/css/main.e3d67702.css",
