@@ -1,7 +1,7 @@
 {
   "name": "thebudgettracker",
   "version": "0.1.0",
-  "homepage": "https://YahyaElKenani.github.io/The-Budget-Tracker",
+  "homepage": "https://yahyaelkenani.github.io/The-Budget-Tracker/",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome": "^1.1.8",
