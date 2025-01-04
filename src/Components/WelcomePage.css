@@ -1,3 +1,8 @@
 body { 
     background-color: #fefee8;
 }
+
+.login-btns { 
+    opacity: 0;
+}
+
