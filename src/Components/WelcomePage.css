@@ -1,8 +1,71 @@
 body { 
-    background-color: #fefee8;
+    background-color: #EFF3F8;
 }
 
 .login-btns { 
     opacity: 0;
 }
 
+.form-container { 
+    top: 50%;
+    transform: translateY(40%);
+}
+
+.site-title { 
+    transform: translateY(25%);
+    font-weight: bold;
+}
+
+.create-account-form { 
+    background-color: rgb(229, 229, 227);
+    border-radius: 15px;
+    height: 70%;
+    width: 50%;
+}
+
+.form-title { 
+    color: #2D2F34;
+}
+
+.create-account-form div { 
+    height: 10%;
+}
+
+.create-account-form input { 
+    height: 10%;
+    border: none;
+    border-radius: 15px;
+}
+
+.create-account-form input:focus { 
+    outline: #5DB996 3px solid;
+}
+
+.input-error { 
+    color: #b61422;
+    display: none;
+}   
+
+.show-password { 
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.user-exists-error { 
+    height: 10vh;
+    width: 50vh;
+    background-color: rgb(154, 4, 4);
+    box-shadow: 2px 2px 4px black;
+    border-radius: 15px;
+    right: 50%;
+    top: 10%;
+    transform: translateX(50%) translateY(50%);
+    color: white;
+    opacity: 0;
+}
+
+.user-exists-error span { 
+    font-size: 2rem;
+}

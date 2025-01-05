@@ -9,7 +9,7 @@ export default function WelcomePage() {
     const loginButtonsRef = useRef(null);
     useEffect(() => { 
         gsap.fromTo(welcomeTitleRef.current,{opacity: 0, y: -100}, {opacity: 1, y: 0}).delay(.4);
-        gsap.fromTo(getStartedRef.current, {opacity: 0, y: 100}, {opacity: 1, y: 0}).delay(.4);
+        gsap.fromTo(getStartedRef.current, {opacity: 0, y: 100}, {opacity: 1, y: 0}).delay(.6);
     }, [])
     const fadeButton = async (e) => { 
         await gsap.to(e, {opacity: 0, x: -100});
@@ -17,12 +17,12 @@ export default function WelcomePage() {
         gsap.fromTo(loginButtonsRef.current,{opacity: 0, x: 100}, {opacity: 1, x: 0});
     }
     return (
-        <div className="d-flex justify-content-center align-items-center vh-100 flex-column">
+        <div className="d-flex justify-content-center align-items-center vh-100 flex-column mx-sm-2">
         <h1 ref={welcomeTitleRef} className="welcome-text display-1 fw-bold text-center my-5">Welcome To TheBudgetTracker</h1>
         <button to={'/userlogin'} ref={getStartedRef} className="btn btn-success btn-lg p-4 fs-3 get-started" onClick={(e) => fadeButton(e.target)}>Get Started <GoArrowRight className="mx-1" /></button>
         <div ref={loginButtonsRef} className="login-btns">
-            <button className="btn btn-outline-primary mx-2 px-3 fs-4 btn-lg">Create Account</button>
-            <button className="btn btn-outline-success mx-2 px-3 fs-4 btn-lg">Log In</button>
+            <Link to={'create-account'} className="btn btn-outline-primary mx-2 px-3 fs-4 btn-lg">Create Account</Link>
+            <Link to={'login'} className="btn btn-outline-success mx-2 px-3 fs-4 btn-lg">Log In</Link>
         </div>
         </div>
     )
