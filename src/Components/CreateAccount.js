@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { GoEye } from "react-icons/go";
 import { GoEyeClosed } from "react-icons/go";
 import { GoAlertFill } from "react-icons/go";
@@ -15,6 +15,7 @@ export default function CreateAccount() {
     const [passwordError, setPasswordError] = useState(false);
     const [confirmPasswordError, setConfirmPasswordError] = useState(false);
     const [existingAccounts, setExistingAccounts] = useState([]); 
+    const alertRef = useRef(null);
     let userAlreadyExists = false;
     useEffect(() => { 
         gsap.fromTo(('.create-account-form'), {y: -100, opacity: 0}, {y: 0, opacity: 1}).delay(.2);
@@ -52,6 +53,10 @@ export default function CreateAccount() {
         }  
         
     }, [existingAccounts])
+
+    const closeAlert = () => {
+        gsap.to('.user-exists-error', {y: -100, opacity: 0} )
+    }
 
     const handleSumbit = (e) => {
         for (let i = 0; i < existingAccounts.length ; i ++) { 
@@ -110,8 +115,9 @@ export default function CreateAccount() {
 
     return (
         <>
-        <div className="user-exists-error position-absolute d-flex align-items-center justify-content-center">
+        <div className="user-exists-error position-absolute d-flex align-items-center justify-content-between p-4" ref={alertRef}>
             <span><GoAlertFill />  User Already Exists</span>
+            <button className="close-alert" onClick={() => {closeAlert()}}>X</button>
         </div>
         <div className="display-2 d-flex justify-content-center site-title">TheBudgetTracker</div>
         <div className="container d-flex justify-content-center align-items-center form-container">

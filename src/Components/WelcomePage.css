@@ -69,3 +69,10 @@ body {
 .user-exists-error span { 
     font-size: 2rem;
 }
+
+.close-alert { 
+    background-color: transparent;
+    border: none;
+    color: white;
+    font-size: 2rem;
+}
