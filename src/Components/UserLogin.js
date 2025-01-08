@@ -17,7 +17,10 @@ export default function UserLogin() {
     let userNotFound = true;
     useEffect(() => {
         setExistingAccounts(JSON.parse(localStorage.getItem('accounts')) || []); 
-    }, [])
+    }, []);
+    useEffect(() => { 
+        gsap.fromTo(('.create-account-form'), {y: -100, opacity: 0}, {y: 0, opacity: 1}).delay(.2);
+    }, []);
     const toggleShowPassword = () => { 
         setShowPassword(!showPassword);
     }
