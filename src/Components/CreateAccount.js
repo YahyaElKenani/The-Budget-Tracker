@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { GoEye } from "react-icons/go";
 import { GoEyeClosed } from "react-icons/go";
 import { GoAlertFill } from "react-icons/go";
+import { GoX } from "react-icons/go";
 import {gsap} from 'gsap';
 import { Link } from "react-router-dom";
 export default function CreateAccount() { 
@@ -117,12 +118,12 @@ export default function CreateAccount() {
         <>
         <div className="user-exists-error position-absolute d-flex align-items-center justify-content-between p-4" ref={alertRef}>
             <span><GoAlertFill />  User Already Exists</span>
-            <button className="close-alert" onClick={() => {closeAlert()}}>X</button>
+            <button className="close-alert" onClick={() => {closeAlert()}}> <GoX/> </button>
         </div>
         <div className="display-2 d-flex justify-content-center site-title">TheBudgetTracker</div>
         <div className="container d-flex justify-content-center align-items-center form-container">
             <form className="d-flex flex-column p-3 create-account-form justify-content-center h-100">
-                <span className="display-4 my-4 text-center form-title d-flex align-items-center justify-content-center">Create New Account</span>
+                <span className="display-4 my-4 text-center form-title d-flex align-items-center justify-content-center fw-bold">Create New Account</span>
                         {/* <div className="alert alert-danger align-items-center" role="alert" style={{display: userAlreadyExists ? 'flex' : 'none'}}><GoAlertFill className="me-2"/> User Already Exists</div> */}
                 <input name="username" placeholder="Enter Username" className="m-4 p-3 fs-5" onChange={(e) => {setUsername(e.target.value)}} value={username}/>
                 <small className="mx-4 input-error" style={usernameErrorMsg}>* Username Must Be 6-20 Letters</small>
