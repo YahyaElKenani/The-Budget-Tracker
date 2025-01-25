@@ -18,7 +18,7 @@ export default function WelcomePage() {
     }
     return (
         <div className="d-flex justify-content-center align-items-center vh-100 flex-column mx-sm-2">
-        <h1 ref={welcomeTitleRef} className="welcome-text display-1 fw-bold text-center my-5">Welcome To TheBudgetTracker</h1>
+        <h1 ref={welcomeTitleRef} className="welcome-text display-1 fw-bold text-center my-5">Welcome To The<span className="title-special-letter">B</span>udgetTracker</h1>
         <button to={'/userlogin'} ref={getStartedRef} className="btn btn-success btn-lg p-4 fs-3 get-started" onClick={(e) => fadeButton(e.currentTarget)}>Get Started <GoArrowRight className="mx-1" /></button>
         <div ref={loginButtonsRef} className="login-btns">
             <Link to={'create-account'} className="btn btn-outline-primary mx-2 px-3 fs-4 btn-lg">Create Account</Link>

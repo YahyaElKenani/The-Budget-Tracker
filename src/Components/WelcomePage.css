@@ -16,6 +16,10 @@ body {
     font-weight: bold;
 }
 
+.title-special-letter { 
+    color: #358063;
+}
+
 .create-account-form { 
     background-color: rgb(229, 229, 227);
     border-radius: 15px;
@@ -54,8 +58,8 @@ body {
 }
 
 .user-exists-error { 
-    height: 10vh;
-    width: 50vh;
+    height: 7vh;
+    width: 40vh;
     background-color: rgb(154, 4, 4);
     box-shadow: 2px 2px 4px black;
     border-radius: 15px;
@@ -75,4 +79,27 @@ body {
     border: none;
     color: white;
     font-size: 2rem;
+}
+
+.profile-section { 
+    padding: 10px;
+    transition: all .5s ease;
+    cursor: pointer;
+    transform: translateX(8%);
+}
+
+.profile-section:hover { 
+    background-color: rgb(220, 210, 210);
+    border-radius: 20px;
+}
+
+.site-logo { 
+    padding: 10px;
+    color: #159e69;
+    background-color: #e1dde5;
+    height: 70px;
+    width: 70px;
+    border-radius: 50%;
+    font-weight: bold;
+    border: 2px solid rgb(11, 166, 107);
 }

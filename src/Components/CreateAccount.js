@@ -19,7 +19,8 @@ export default function CreateAccount() {
     const alertRef = useRef(null);
     let userAlreadyExists = false;
     useEffect(() => { 
-        gsap.fromTo(('.create-account-form'), {y: -100, opacity: 0}, {y: 0, opacity: 1}).delay(.2);
+        gsap.fromTo(('.create-account-form'), {y: 100, opacity: 0}, {y: 0, opacity: 1}).delay(.2);
+        gsap.fromTo(('.site-title'), {opacity: 0, y: -100}, {opacity: 1, y: 50});
     }, []);
 
     // fetch local storage accounts into existing accounts state
@@ -120,7 +121,7 @@ export default function CreateAccount() {
             <span><GoAlertFill />  User Already Exists</span>
             <button className="close-alert" onClick={() => {closeAlert()}}> <GoX/> </button>
         </div>
-        <div className="display-2 d-flex justify-content-center site-title">TheBudgetTracker</div>
+        <div className="display-2 d-flex justify-content-center site-title">The<span className="title-special-letter">B</span>udgetTracker</div>
         <div className="container d-flex justify-content-center align-items-center form-container">
             <form className="d-flex flex-column p-3 create-account-form justify-content-center h-100">
                 <span className="display-4 my-4 text-center form-title d-flex align-items-center justify-content-center fw-bold">Create New Account</span>

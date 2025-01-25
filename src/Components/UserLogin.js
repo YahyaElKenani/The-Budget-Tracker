@@ -19,7 +19,8 @@ export default function UserLogin() {
         setExistingAccounts(JSON.parse(localStorage.getItem('accounts')) || []); 
     }, []);
     useEffect(() => { 
-        gsap.fromTo(('.create-account-form'), {y: -100, opacity: 0}, {y: 0, opacity: 1}).delay(.2);
+        gsap.fromTo(('.create-account-form'), {y: 100, opacity: 0}, {y: 0, opacity: 1}).delay(.2);
+        gsap.fromTo(('.site-title'), {opacity: 0, y: -100}, {opacity: 1, y: 50});
     }, []);
     const toggleShowPassword = () => { 
         setShowPassword(!showPassword);
@@ -78,7 +79,7 @@ export default function UserLogin() {
                     <span><GoAlertFill />  User Does Not Exist</span>
                     <button className="close-alert" onClick={() => {closeAlert()}}> <GoX/> </button>
                 </div>
-        <div className="display-2 d-flex justify-content-center site-title">TheBudgetTracker</div>
+        <div className="display-2 d-flex justify-content-center site-title">The<span className="title-special-letter">B</span>udgetTracker</div>
         <div className="container form-container d-flex flex-column align-items-center justify-content-center mt-5">
             <form className="d-flex flex-column create-account-form h-100">
                 <div className="display-4 my-4 text-center form-title d-flex align-items-center justify-content-center fw-bold">Log In</div>
