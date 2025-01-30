@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addOnBudget, addToHistory, addToTransactions, reduceFromBudget, removeFromTransactions, transactionConfirmed, transactionCreated, transactionDeleted, updateBudget } from '../Store/userSlice';
 import { toast, ToastContainer } from 'react-toastify';
-
+import {v4 as uuidv4} from 'uuid'
 import 'react-toastify/dist/ReactToastify.css';
 import { Tooltip, Zoom } from '@mui/material';
 import { Link } from 'react-router-dom';
@@ -83,22 +83,28 @@ export default function Homepage() {
         setProductPrice(e);
     }
     const handleSubmit = (e) => { 
-        e.preventDefault(); 
-        console.log({productName, productPrice});
-        // setTransactions(prevState => [...prevState, {ProductID: Transactions.length, ProductName: productName, ProductPrice: productPrice, Remaining: userData.budget - productPrice}])
-        setProductName('');
-        setProductPrice('');
-        dispatch(addToTransactions({ProductID: userData.currentTransactions.length, ProductName: productName, ProductPrice: productPrice}));
-        dispatch(transactionCreated());
+        if (productName === '' || productPrice === '') { 
+            toast.error('Oops! There is missing input')
+            return;
+        } else { 
+            e.preventDefault(); 
+            console.log({productName, productPrice});
+            // setTransactions(prevState => [...prevState, {ProductID: Transactions.length, ProductName: productName, ProductPrice: productPrice, Remaining: userData.budget - productPrice}])
+            setProductName('');
+            setProductPrice('');
+            dispatch(addToTransactions({ProductID: uuidv4(), ProductName: productName, ProductPrice: productPrice}));
+            dispatch(transactionCreated());
+        }
     }
     
     const showTransactions = () => {
         return userData.currentTransactions.map((item, index) => (
-            <tr key={index}>
+            <tr key={item.ProductID}>
             <td className={centerTableElements}>{item.ProductName}</td>
             <td className={centerTableElements}>{item.ProductPrice}</td>
             <td className={centerTableElements}>{userData.budget - item.ProductPrice}</td>
-            <td className={`${centerTableElements} product-buy`} onClick={() => buyProduct(item, -1)}>Confirm</td>
+            <td className={`${centerTableElements} product-buy`} onClick={() => userData.budget - item.ProductPrice >= 0 && buyProduct(item, -1)} 
+            style={{ cursor: userData.budget - item.ProductPrice < 0 ? 'not-allowed' : 'pointer' }}>Confirm</td>
             <td className={`${centerTableElements} product-delete`} onClick={() => deleteProduct(item.ProductID, 1)}>Delete</td>
             </tr>
         ));
@@ -110,11 +116,15 @@ export default function Homepage() {
     }
 
     const buyProduct = (item, e) => { 
-        dispatch(reduceFromBudget(item.ProductPrice));
-        dispatch(addToHistory(item));
-        console.log(userData.budgetHistory);
-        deleteProduct(item.ProductID, e);
-        dispatch(transactionConfirmed());
+            if(userData.budget - item.ProductPrice >= 0) { 
+                dispatch(reduceFromBudget(item.ProductPrice));
+                dispatch(addToHistory(item));
+                console.log(userData.budgetHistory);
+                deleteProduct(item.ProductID, e);
+                dispatch(transactionConfirmed());
+            } else {
+                toast.error('Not enought budget');
+            }
     }
 
     const handleBudgetSubmit = (e) => {

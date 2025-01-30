@@ -39,10 +39,10 @@ const userSlice = createSlice({
             state.transactionsConfirmed += 1
         }, 
         transactionDeleted: (state, action) => {
-            if (state.transactionsDeleted === 0) { 
+            state.transactionsDeleted = state.transactionsDeleted + action.payload;
+            if (state.transactionsDeleted < 0) { 
                 state.transactionsDeleted = 1
             }
-            state.transactionsDeleted = state.transactionsDeleted + action.payload;
         }, 
     }
 })

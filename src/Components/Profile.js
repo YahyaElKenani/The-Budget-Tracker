@@ -1,11 +1,9 @@
 import { useDispatch, useSelector } from "react-redux"
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import EditIcon from '@mui/icons-material/Edit';
+
 import { useEffect, useState } from "react";
 import gsap from "gsap";
-import { deleteTransactionsHistory, updateUsername } from "../Store/userSlice";
-import { toast, ToastContainer } from "react-toastify";
-import { current } from "@reduxjs/toolkit";
+import { deleteTransactionsHistory } from "../Store/userSlice";
 import { Tooltip } from "@mui/material";
 import { Link } from "react-router-dom";
 import { Button, Modal } from "react-bootstrap";
@@ -24,10 +22,6 @@ export default function Profile() {
                 </tr>
             ));
         };
-
-        const deleteHistory = () => { 
-            dispatch(deleteTransactionsHistory())
-        }
         const handleShow = () => setDeleteConfirmation(true);
         const handleClose = () => setDeleteConfirmation(false);
         const handleDelete = () => {
@@ -39,7 +33,6 @@ export default function Profile() {
     }, [])
     return (
         <>
-                <ToastContainer position="top-center" autoClose = {3000} />
                 <div className="homepage-header d-flex justify-content-between align-items-center mx-5 my-2">
                     <Link to={"/homepage"} className="site-logo fs-1 site-logo d-flex align-items-center justify-content-center mt-1">B</Link>
                         <div to={"/profile"} className='profile-section d-flex align-items-center text-dark'>
