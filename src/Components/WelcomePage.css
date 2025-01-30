@@ -102,4 +102,115 @@ body {
     border-radius: 50%;
     font-weight: bold;
     border: 2px solid rgb(11, 166, 107);
+    text-decoration: none;
+}
+
+.budget-counter { 
+    height: 200px;
+    width: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: .5px solid rgb(11, 166, 107);
+    border-radius: 50%;
+}
+
+.budget-counter-large { 
+    height: 500px;
+    width: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: .5px solid rgb(11, 166, 107);
+    border-radius: 50%;
+}
+
+.thead-dark { 
+    background-color: #343a40; /* Dark background */
+    color: #fff
+}
+
+table { 
+    background-color: transparent;
+}
+
+.product-buy, 
+.product-delete { 
+    cursor: pointer;
+    transition: all .2s ease;
+}
+
+.product-buy:hover { 
+    color: #159e69;
+}
+
+.product-delete:hover { 
+    color: #b61422;
+}
+
+.add-product-details { 
+    border: none;
+    background-color: #2D2F34;
+    height: 50px;
+    width: 15%;
+    border-radius: 10px;
+    padding: 8px;
+    transition: .5s all ease;
+    color: white;
+}
+
+.edit-name { 
+    border: none;
+    background-color: #2D2F34;
+    border-radius: 5px;
+    transition: .5s all ease;
+    color: white;
+}
+
+.add-product-details::placeholder { 
+    color: rgba(255, 255, 255, 0.533);
+}
+
+.add-product-details:focus { 
+    outline: none;
+    transform: scale(1.2);
+}
+
+.edit-name:focus { 
+    outline: none;
+    transform: scale(1.2);
+}
+
+.add-product { 
+    transition: .3s all ease;
+}
+
+.profile-section { 
+    text-decoration: none;
+}
+
+.profile-info { 
+    background-color: #e0e6ed;
+    border-radius: 20px;
+}
+
+.edit-icon { 
+    background-color: white;
+    padding: 5px;
+    border-radius: 50%;
+}
+
+.account-details {
+    margin-right: 5.75rem !important;
+}
+
+.budget-counter-profile { 
+    height: 225px;
+    width: 225px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: .5px solid rgb(11, 166, 107);
+    border-radius: 50%;
+    font-size: 4rem;
 }

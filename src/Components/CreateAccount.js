@@ -5,6 +5,8 @@ import { GoAlertFill } from "react-icons/go";
 import { GoX } from "react-icons/go";
 import {gsap} from 'gsap';
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { updateBudget, updateUsername } from "../Store/userSlice";
 export default function CreateAccount() { 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -17,6 +19,7 @@ export default function CreateAccount() {
     const [confirmPasswordError, setConfirmPasswordError] = useState(false);
     const [existingAccounts, setExistingAccounts] = useState([]); 
     const alertRef = useRef(null);
+    const dispatch = useDispatch();
     let userAlreadyExists = false;
     useEffect(() => { 
         gsap.fromTo(('.create-account-form'), {y: 100, opacity: 0}, {y: 0, opacity: 1}).delay(.2);
@@ -25,7 +28,12 @@ export default function CreateAccount() {
 
     // fetch local storage accounts into existing accounts state
     useEffect(() => {
-        setExistingAccounts(JSON.parse(localStorage.getItem('accounts')) || []); 
+        try { 
+            setExistingAccounts(JSON.parse(localStorage.getItem('accounts')) || []); 
+        } catch (error) { 
+            console.error('Error')
+            setExistingAccounts([]);
+        }
     }, [])
 
     const usernameErrorMsg = { 
@@ -111,6 +119,8 @@ export default function CreateAccount() {
                 setUsername('');
                 setPassword('');
                 setConfirmPassword('');
+                dispatch(updateUsername(username));
+                dispatch(updateBudget(budget));
             }
         }
     }

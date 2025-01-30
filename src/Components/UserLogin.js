@@ -1,22 +1,30 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import { GoEye } from "react-icons/go";
 import { GoEyeClosed } from "react-icons/go";
 import { GoAlertFill } from "react-icons/go";
 import { GoX } from "react-icons/go";
 import { Link } from "react-router-dom";
 import {gsap} from 'gsap';
+import { useDispatch } from "react-redux";
+import { updateBudget, updateUsername } from "../Store/userSlice";
 
 export default function UserLogin() { 
     const [showPassword, setShowPassword] = useState(false);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [budget, setBudget] = useState(0); 
     const [existingAccounts, setExistingAccounts] = useState([]); 
     const [usernameErrorStatus, setUsernameErrorStatus] = useState(false);
     const [passwordErrorStatus, setPasswordErrorStatus] = useState(false);
-    const alertRef = useRef();
+    const dispatch = useDispatch();
     let userNotFound = true;
     useEffect(() => {
-        setExistingAccounts(JSON.parse(localStorage.getItem('accounts')) || []); 
+        try { 
+            setExistingAccounts(JSON.parse(localStorage.getItem('accounts')) || []); 
+        } catch (error) { 
+            console.error('Error')
+            setExistingAccounts([]);
+        } 
     }, []);
     useEffect(() => { 
         gsap.fromTo(('.create-account-form'), {y: 100, opacity: 0}, {y: 0, opacity: 1}).delay(.2);
@@ -47,8 +55,9 @@ export default function UserLogin() {
     const handleSubmit = (e) => { 
         if (username !== '' && password !== '') { 
             for (let i = 0; i < existingAccounts.length; i++) { 
-                if (username === existingAccounts[i].userName && password === existingAccounts[i].userPassword) { 
-                    console.log(`existing user ${username}`);
+                if (username === existingAccounts[i].userName && password === existingAccounts[i].userPassword) {
+                    dispatch(updateUsername(username));
+                    dispatch(updateBudget(existingAccounts[i].userBudget));
                     userNotFound = false;
                     break;
                 }
@@ -72,6 +81,7 @@ export default function UserLogin() {
                 setPasswordErrorStatus(false);
             }, 5000);
         }
+
     }
     return ( 
         <>
