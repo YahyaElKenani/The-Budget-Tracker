@@ -5,25 +5,25 @@ import { GoAlertFill } from "react-icons/go";
 import { GoX } from "react-icons/go";
 import { Link } from "react-router-dom";
 import {gsap} from 'gsap';
-import { useDispatch } from "react-redux";
-import { updateBudget, updateUsername } from "../Store/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { toast, ToastContainer } from "react-toastify";
+import { createNewAccounts, setCurrentUser, updateBudget, updateUsername } from "../Store/userSlice";
+import { create } from "@mui/material/styles/createTransitions";
 
 export default function UserLogin() { 
     const [showPassword, setShowPassword] = useState(false);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [budget, setBudget] = useState(0); 
-    const [existingAccounts, setExistingAccounts] = useState([]); 
     const [usernameErrorStatus, setUsernameErrorStatus] = useState(false);
     const [passwordErrorStatus, setPasswordErrorStatus] = useState(false);
     const dispatch = useDispatch();
-    let userNotFound = true;
+    const existingAccounts = useSelector((state) => state.userData.accounts);
     useEffect(() => {
         try { 
-            setExistingAccounts(JSON.parse(localStorage.getItem('accounts')) || []); 
+            dispatch(createNewAccounts(JSON.parse(localStorage.getItem('accounts') || [])));
         } catch (error) { 
             console.error('Error')
-            setExistingAccounts([]);
+            dispatch(createNewAccounts([]));
         } 
     }, []);
     useEffect(() => { 
@@ -33,31 +33,18 @@ export default function UserLogin() {
     const toggleShowPassword = () => { 
         setShowPassword(!showPassword);
     }
-    const userExistsError = () => { 
-        gsap.fromTo('.user-exists-error', {y: -100, opacity: 0}, {y: 5, opacity: 1});
-    }
     const closeAlert = () => { 
         gsap.to('.user-exists-error', {opacity: 0, y: -100})
     }
-    const loginFailed = () => { 
-        gsap.fromTo(
-            '.form-container',
-            { x: -10 },
-            {
-                x: 10,
-                duration: 0.1,
-                repeat: 3,
-                yoyo: true,
-                ease: 'power1.inOut',
-            }
-        );
-    }
     const handleSubmit = (e) => { 
+        let userNotFound = true;
         if (username !== '' && password !== '') { 
             for (let i = 0; i < existingAccounts.length; i++) { 
                 if (username === existingAccounts[i].userName && password === existingAccounts[i].userPassword) {
-                    dispatch(updateUsername(username));
-                    dispatch(updateBudget(existingAccounts[i].userBudget));
+                    toast.success('Logged In!');
+                    dispatch(setCurrentUser(existingAccounts[i].userID));
+                    console.log(existingAccounts[i].userID);
+                    console.log(existingAccounts);
                     userNotFound = false;
                     break;
                 }
@@ -65,8 +52,7 @@ export default function UserLogin() {
             if (userNotFound) { 
                 e.preventDefault();
                 console.log(`user not existing`);
-                loginFailed();
-                userExistsError();
+                toast.error('User Does Not Exist');
             }
         } else if (username === '') { 
             e.preventDefault();
@@ -85,6 +71,7 @@ export default function UserLogin() {
     }
     return ( 
         <>
+        <ToastContainer position="top-center" autoClose = {3000} />
         <div className="user-exists-error position-absolute d-flex align-items-center justify-content-between p-4">
                     <span><GoAlertFill />  User Does Not Exist</span>
                     <button className="close-alert" onClick={() => {closeAlert()}}> <GoX/> </button>

@@ -2,12 +2,13 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import gsap from 'gsap';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addOnBudget, addToHistory, addToTransactions, reduceFromBudget, removeFromTransactions, transactionConfirmed, transactionCreated, transactionDeleted, updateBudget } from '../Store/userSlice';
+import { addOnBudget, addToHistory, addTransactionToAccount, clearTransactionsFromAccount, reduceFromBudget, removeFromTransactions, setCurrentUser, transactionConfirmed, transactionCreated, transactionDeleted, updateBudget } from '../Store/userSlice';
 import { toast, ToastContainer } from 'react-toastify';
 import {v4 as uuidv4} from 'uuid'
 import 'react-toastify/dist/ReactToastify.css';
 import { Tooltip, Zoom } from '@mui/material';
 import { Link } from 'react-router-dom';
+import { current } from '@reduxjs/toolkit';
 
 export default function Homepage() { 
     const [addProductFlag, setAddProductFlag] = useState(false);
@@ -17,8 +18,15 @@ export default function Homepage() {
     const [addAmount, setAddAmount] = useState();
     const [newBudget, setNewBudget] = useState();
     const [reduceAmount, setReduceAmount] = useState();
-    const userData = useSelector((state) => state.userData);
     const dispatch = useDispatch();
+    
+    
+    const userData = useSelector((state) => state.userData);
+    const currentUser = useSelector((state) => state.userData.currentUserData);
+    const transactions = useSelector((state) => state.userData.currentUserData.transactionsList); 
+    
+
+
     useEffect(() => {
         localStorage.setItem('currentAccount', JSON.stringify(userData));
         gsap.to('.site-logo', {rotate: 360, duration: 5, transformOrigin: 'center center', repeat: -1, ease:"none"});
@@ -29,9 +37,14 @@ export default function Homepage() {
             yoyo: true, // Go back and forth
             ease: 'power1.inOut'
         });
-    }, [])
+        console.log(userData.accounts);
+        console.log(currentUser);
+    }, [userData])
 
     const centerTableElements = 'text-center align-middle';
+    useEffect(() => { 
+        console.log(currentUser);
+    }, [])
     useEffect(() => {
         if (addProductFlag) {
             gsap.to('.add-product', {
@@ -71,9 +84,15 @@ export default function Homepage() {
         }
     }, [updateBudgetFlag]);
     const showAddProduct = () => { 
+        if (updateBudgetFlag === true) { 
+            setUpdateBudgetFlag(!updateBudgetFlag)
+        }
         setAddProductFlag(!addProductFlag);
     }
     const showUpdateBudget = () => { 
+        if (addProductFlag === true) { 
+            setAddProductFlag(!addProductFlag)
+        }
         setUpdateBudgetFlag(!updateBudgetFlag);
     }
     const handleProductName = (e) => { 
@@ -83,75 +102,89 @@ export default function Homepage() {
         setProductPrice(e);
     }
     const handleSubmit = (e) => { 
+        e.preventDefault(); 
         if (productName === '' || productPrice === '') { 
-            toast.error('Oops! There is missing input')
+            toast.error('Oops! There is missing input(s)')
             return;
         } else { 
-            e.preventDefault(); 
-            console.log({productName, productPrice});
-            // setTransactions(prevState => [...prevState, {ProductID: Transactions.length, ProductName: productName, ProductPrice: productPrice, Remaining: userData.budget - productPrice}])
+            toast.success('New Transaction Added!')
+            const transaction = { 
+                ProductID: uuidv4(),
+                ProductName: productName,
+                ProductPrice: Number(productPrice)
+            }
+            console.log(currentUser.transactionsList);
+            dispatch(addTransactionToAccount({transaction}));
+            dispatch(transactionCreated());
             setProductName('');
             setProductPrice('');
-            dispatch(addToTransactions({ProductID: uuidv4(), ProductName: productName, ProductPrice: productPrice}));
-            dispatch(transactionCreated());
         }
     }
-    
+
     const showTransactions = () => {
-        return userData.currentTransactions.map((item, index) => (
-            <tr key={item.ProductID}>
-            <td className={centerTableElements}>{item.ProductName}</td>
-            <td className={centerTableElements}>{item.ProductPrice}</td>
-            <td className={centerTableElements}>{userData.budget - item.ProductPrice}</td>
-            <td className={`${centerTableElements} product-buy`} onClick={() => userData.budget - item.ProductPrice >= 0 && buyProduct(item, -1)} 
-            style={{ cursor: userData.budget - item.ProductPrice < 0 ? 'not-allowed' : 'pointer' }}>Confirm</td>
-            <td className={`${centerTableElements} product-delete`} onClick={() => deleteProduct(item.ProductID, 1)}>Delete</td>
-            </tr>
-        ));
+        if (!currentUser || !transactions) { 
+            return null;
+        } else {  
+                return transactions.map((item) => (
+                    <tr key={item.ProductID}>
+                    <td className={centerTableElements}>{item.ProductName}</td>
+                    <td className={centerTableElements}>{item.ProductPrice}</td>
+                    <td className={centerTableElements}>{currentUser.budget - item.ProductPrice}</td>
+                    <td className={`${centerTableElements} product-buy`} onClick={() => currentUser.budget - item.ProductPrice >= 0 && buyProduct(item)} 
+                    style={{ cursor: currentUser.budget - item.ProductPrice < 0 ? 'not-allowed' : 'pointer' }}>Confirm</td>
+                    <td className={`${centerTableElements} product-delete`} onClick={() => deleteProduct(item.ProductID, 'delete')}>Delete</td>
+                    </tr>
+                ));
+            
+        }
     };
 
     const deleteProduct = (id, e) => { 
-        dispatch(removeFromTransactions(id));
-        dispatch(transactionDeleted(e));
+        dispatch(removeFromTransactions({productID: id}));
+        dispatch(transactionDeleted({type: e}));
+        console.log(currentUser);
+        toast.success('Transactions Deleted!')
     }
 
-    const buyProduct = (item, e) => { 
-            if(userData.budget - item.ProductPrice >= 0) { 
-                dispatch(reduceFromBudget(item.ProductPrice));
-                dispatch(addToHistory(item));
-                console.log(userData.budgetHistory);
-                deleteProduct(item.ProductID, e);
-                dispatch(transactionConfirmed());
-            } else {
-                toast.error('Not enought budget');
-            }
-    }
+    const buyProduct = (item) => { 
+        if(currentUser.budget - item.ProductPrice >= 0) { 
+            console.log(currentUser);
+            console.log('buying:', item)
+            dispatch(reduceFromBudget({ amount: Number(item.ProductPrice) }));  
+            dispatch(addToHistory({ item }));
+            deleteProduct(item.ProductID, '');
+            dispatch(transactionConfirmed());
+            toast.success('Transaction Confirmed!');
+        } else {
+            toast.error('Not enough budget');
+        }
+    };
 
     const handleBudgetSubmit = (e) => {
-        e.preventDefault()
-        if (newBudget < 0 || addAmount < 0 || reduceAmount < 0 ) { 
+        e.preventDefault();
+        if (newBudget !== Number(newBudget) || addAmount !== Number(addAmount) || reduceAmount !== Number(reduceAmount)) { 
+            toast.error("Oops! You can't enter non-numerical values");
+            return;
+        }
+        if (newBudget < 0 || addAmount < 0 || reduceAmount < 0) { 
             toast.error("Oops! You can't enter a negative number");
             return; 
-            } else { 
-            if (newBudget) { 
-                dispatch(updateBudget(Number(newBudget)))
-            } 
-            if (addAmount) { 
-                dispatch(addOnBudget(Number(addAmount)))
-            }
-            if (reduceAmount) { 
-                dispatch(reduceFromBudget(Number(reduceAmount)))
-            }
+        } 
+        
+        if (newBudget) { 
+            dispatch(updateBudget({ amount: Number(newBudget) }));
+        } 
+        if (addAmount) { 
+            dispatch(addOnBudget({ amount: Number(addAmount) }));
+        }
+        if (reduceAmount) { 
+            dispatch(reduceFromBudget({ amount: Number(reduceAmount) }));
+        }
             setAddAmount('');
             setNewBudget('');
             setReduceAmount('');
+            toast.success("Budget Updated Successfully!")
         } 
-        toast.success("Budget Updated Successfully!")
-    }
-
-    useEffect(() => {
-        console.log(userData.budget.length);
-    }, [])
 
     return (
         <>
@@ -160,14 +193,14 @@ export default function Homepage() {
                 <div className="site-logo fs-1 site-logo d-flex align-items-center justify-content-center mt-1">B</div>
                 <Tooltip title = "Show Profile" arrow slots={{transition: Zoom}}>
                     <Link to={"/profile"} className='profile-section d-flex align-items-center text-dark'>
-                                <div className='me-3 fs-6 fw-bold'>{userData.name}</div>
+                                <div className='me-3 fs-6 fw-bold'>{currentUser.username}</div>
                                 <div className="profile-logo"><AccountCircleIcon fontSize='large'></AccountCircleIcon></div>
                     </Link>
                 </Tooltip>
             </div>
             <div className='budget-container d-flex flex-column align-items-center container my-5'>
                 <span className='display-5 fw-bold'>Your Current Budget</span>
-                <div className={`${userData.budget.toString().length > 7 ? 'display-1 budget-counter-large' : 'display-6 budget-counter' } my-5`}>{userData.budget}</div>
+                <div className={`${currentUser.budget.toString().length > 7 ? 'display-1 budget-counter-large' : 'display-6 budget-counter' } my-5`}>{Number(currentUser.budget ?? 0)}</div>
             </div>
             <div className='operations-buttons d-flex align-items-center justify-content-center gap-2'>
                 <button className={`btn ${addProductFlag ? 'btn-outline-danger' : 'btn-outline-success'}`} onClick={() => showAddProduct()}>{addProductFlag ? 'Finish Adding' : 'Add Transactions'}</button>

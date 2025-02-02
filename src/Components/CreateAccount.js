@@ -5,28 +5,32 @@ import { GoAlertFill } from "react-icons/go";
 import { GoX } from "react-icons/go";
 import {gsap} from 'gsap';
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { updateBudget, updateUsername } from "../Store/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import {toast, ToastContainer} from 'react-toastify'
+import {v4 as uuidv4} from 'uuid'
+import { addAccount, setCurrentUser, updateBudget, updateUsername } from "../Store/userSlice";
 export default function CreateAccount() { 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [budget, setBudget] = useState('');
+    const [budget, setBudget] = useState(0);
     const [usernameError, setUsernameError] = useState(false);
     const [passwordError, setPasswordError] = useState(false);
     const [confirmPasswordError, setConfirmPasswordError] = useState(false);
     const [existingAccounts, setExistingAccounts] = useState([]); 
     const alertRef = useRef(null);
     const dispatch = useDispatch();
+    const userData = useSelector(state => state.userData);
+    const currentUserData = useSelector((state) => state.userData.currentUserData);
     let userAlreadyExists = false;
     useEffect(() => { 
         gsap.fromTo(('.create-account-form'), {y: 100, opacity: 0}, {y: 0, opacity: 1}).delay(.2);
         gsap.fromTo(('.site-title'), {opacity: 0, y: -100}, {opacity: 1, y: 50});
     }, []);
 
-    // fetch local storage accounts into existing accounts state
+
     useEffect(() => {
         try { 
             setExistingAccounts(JSON.parse(localStorage.getItem('accounts')) || []); 
@@ -35,6 +39,10 @@ export default function CreateAccount() {
             setExistingAccounts([]);
         }
     }, [])
+
+    useEffect(() => {
+        localStorage.setItem('accounts', JSON.stringify(userData.accounts))
+    }, [userData.accounts])
 
     const usernameErrorMsg = { 
         display: usernameError ? 'inline' : 'none'
@@ -58,6 +66,7 @@ export default function CreateAccount() {
 
     //after the user creates the account, add it to the local storage
     useEffect (() => {
+        console.log(currentUserData.budget);
         if (existingAccounts.length !== 0) { 
             localStorage.setItem('accounts', JSON.stringify(existingAccounts)); 
         }  
@@ -73,60 +82,58 @@ export default function CreateAccount() {
             if (username === existingAccounts[i].userName) { 
                 e.preventDefault(); 
                 userExistsError();
-                userAlreadyExists = true;
-                gsap.fromTo(
-                    '.form-container',
-                    { x: -10 },
-                    {
-                        x: 10,
-                        duration: 0.1,
-                        repeat: 3,
-                        yoyo: true,
-                        ease: 'power1.inOut',
-                    }
-                );
+                toast.error('User already Exists!');
                 break;
             }
         }
         if (userAlreadyExists === false) { 
             if (username.length > 20 || username.length < 6 || username.length === 0) { 
                 e.preventDefault();
-                setUsernameError(true);
-                setTimeout(() => {
-                    setUsernameError(false);
-                }, 10000);
+                if (username.length > 20) { 
+                    toast.error(`Username ean't be longer than 20 letters`)
+                } else if (username.length < 6 && username.length !== 0) { 
+                    toast.error(`Username can't be shorter than 6 letters`)
+                } else if (username.length === 0) { 
+                    toast.error(`Username Can't be empty`)
+                }
             } else if (password.length > 20 || password.length < 12 || password.length === 0) { 
                 e.preventDefault();
-                setPasswordError(true);
-                setTimeout(() => {
-                    setPasswordError(false);
-                }, 10000);
+                if (password.length > 20) { 
+                    toast.error(`Password ean't be longer than 20 letters`)
+                } else if (password.length < 12 && password.length !== 0) { 
+                    toast.error(`Password can't be shorter than 12 letters`)
+                } else if (password.length === 0) { 
+                    toast.error(`Password Can't be empty`)
+                }
             } else if (confirmPassword !== password) { 
                 e.preventDefault();
-                setConfirmPasswordError(true);
-                setTimeout(() => {
-                    setConfirmPasswordError(false);
-                }, 10000);
+                toast.error('Invalid Password Confirmation! Please Try Again');
             } else { 
+                toast.success('Account Created Successfully!');
                 const newAccount = { 
-                    userID: existingAccounts.length + 1,
+                    userID: uuidv4(),
                     userName: username,
                     userPassword: password,
-                    userBudget: budget === '' ? 0 : budget,
+                    userBudget: budget,
+                    transactionsList: [],
+                    budgetHistory: [],
+                    numberOfTransactions: 0,
+                    transactionsConfirmed: 0,
+                    transactionsDeleted: 0,
                 }
                 setExistingAccounts((prevAccounts) => [...prevAccounts, newAccount]);
                 setBudget('');
                 setUsername('');
                 setPassword('');
                 setConfirmPassword('');
-                dispatch(updateUsername(username));
-                dispatch(updateBudget(budget));
+                dispatch(addAccount(newAccount));
             }
         }
     }
 
     return (
         <>
+        <ToastContainer position="top-center" autoClose={3000} />
         <div className="user-exists-error position-absolute d-flex align-items-center justify-content-between p-4" ref={alertRef}>
             <span><GoAlertFill />  User Already Exists</span>
             <button className="close-alert" onClick={() => {closeAlert()}}> <GoX/> </button>

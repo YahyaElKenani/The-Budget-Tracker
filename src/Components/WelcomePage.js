@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
 import './WelcomePage.css'
 import {gsap} from 'gsap';
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { GoArrowRight } from "react-icons/go";
 export default function WelcomePage() { 
+    const [showButtons, setShowButtons] = useState(false);
     const welcomeTitleRef = useRef(null);
     const getStartedRef = useRef(null);
     const loginButtonsRef = useRef(null);
@@ -15,14 +16,15 @@ export default function WelcomePage() {
         await gsap.to(e, {opacity: 0, x: -100});
         // document.querySelector('.get-started').remove();
         gsap.fromTo(loginButtonsRef.current,{opacity: 0, x: 100}, {opacity: 1, x: 0});
+        setShowButtons(!showButtons);
     }
     return (
         <div className="d-flex justify-content-center align-items-center vh-100 flex-column mx-sm-2">
         <h1 ref={welcomeTitleRef} className="welcome-text display-1 fw-bold text-center my-5">Welcome To The<span className="title-special-letter">B</span>udgetTracker</h1>
         <button to={'/userlogin'} ref={getStartedRef} className="btn btn-success btn-lg p-4 fs-3 get-started" onClick={(e) => fadeButton(e.currentTarget)}>Get Started <GoArrowRight className="mx-1" /></button>
-        <div ref={loginButtonsRef} className="login-btns">
-            <Link to={'create-account'} className="btn btn-outline-primary mx-2 px-3 fs-4 btn-lg">Create Account</Link>
-            <Link to={'login'} className="btn btn-outline-success mx-2 px-3 fs-4 btn-lg">Log In</Link>
+        <div ref={loginButtonsRef} className="login-btns" style={{position: 'absolute', top: '60%'}}>
+            <Link to={'create-account'} className={`${showButtons ? '' : 'd-none'} btn btn-outline-primary mx-2 px-3 fs-4 btn-lg `}>Create Account</Link>
+            <Link to={'login'} className={`${showButtons ? '' : 'd-none'} btn btn-outline-success mx-2 px-3 fs-4 btn-lg`}>Log In</Link>
         </div>
         </div>
     )
