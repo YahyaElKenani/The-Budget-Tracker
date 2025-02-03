@@ -68,9 +68,6 @@ export default function Profile() {
             dispatch(deleteTransactionsHistory());
             setDeleteConfirmation(false);
         };
-    useEffect(() => {
-        gsap.to('.site-logo', {rotate: 360, duration: 5, transformOrigin: 'center center', repeat: -1, ease:"none"});
-    }, [])
     return (
         <>
         <ToastContainer position="top-center" autoClose={3000} />
