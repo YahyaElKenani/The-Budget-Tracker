@@ -2,25 +2,30 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import gsap from 'gsap';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addOnBudget, addToHistory, addTransactionToAccount, clearTransactionsFromAccount, reduceFromBudget, removeFromTransactions, setCurrentUser, transactionConfirmed, transactionCreated, transactionDeleted, updateBudget } from '../Store/userSlice';
+import { addOnBudget, addToHistory, addTransactionToAccount, clearTransactionsFromAccount, reduceFromBudget, removeFromTransactions, setCurrentUser, transactionConfirmed, transactionCreated, transactionDeleted, updateBudget, updateLimit } from '../Store/userSlice';
 import { toast, ToastContainer } from 'react-toastify';
 import {v4 as uuidv4} from 'uuid'
 import 'react-toastify/dist/ReactToastify.css';
 import { Tooltip, Zoom } from '@mui/material';
 import { Link } from 'react-router-dom';
+import { Modal, Button } from 'react-bootstrap';
 import { current } from '@reduxjs/toolkit';
 
 export default function Homepage() { 
     const [addProductFlag, setAddProductFlag] = useState(false);
     const [updateBudgetFlag, setUpdateBudgetFlag] = useState(false);
+    const [updateLimitFlag, setUpdateLimitFlag] = useState(false);
     const [productName, setProductName] = useState(''); 
     const [productPrice, setProductPrice] = useState('');
-    const [addAmount, setAddAmount] = useState();
-    const [newBudget, setNewBudget] = useState();
-    const [reduceAmount, setReduceAmount] = useState();
+    const [addAmount, setAddAmount] = useState('');
+    const [newBudget, setNewBudget] = useState('');
+    const [reduceAmount, setReduceAmount] = useState('');
+    const [newBudgetLimit, setNewBudgetLimit] = useState();
+    const [deleteConfirmation, setDeleteConfirmation] = useState(false);
+    const [addLimitAmount, setAddLimitAmount] = useState();
+    const [reduceLimitAmount, setReduceLimitAmount] = useState();
+    const [currentTransaction, setCurrentTransaction] = useState(null);
     const dispatch = useDispatch();
-    
-    
     const userData = useSelector((state) => state.userData);
     const currentUser = useSelector((state) => state.userData.currentUserData);
     const transactions = useSelector((state) => state.userData.currentUserData.transactionsList); 
@@ -37,9 +42,22 @@ export default function Homepage() {
             yoyo: true, // Go back and forth
             ease: 'power1.inOut'
         });
+        gsap.killTweensOf('.budget-limit-counter');
+        gsap.to('.budget-limit-counter', {
+            duration: 1,
+            boxShadow: currentUser.budget < currentUser.budgetLimit ? '0 0 5px 2px rgb(219, 52, 52)' : '0 0 5px 2px rgb(52, 219, 102)' ,
+            repeat: -1, // Repeat indefinitely
+            yoyo: true, // Go back and forth
+            ease: 'power1.inOut'
+        });
         console.log(userData.accounts);
         console.log(currentUser);
-    }, [userData])
+        return () => {
+            gsap.killTweensOf('.site-logo');
+            gsap.killTweensOf('.budget-counter');
+            gsap.killTweensOf('.budget-limit-counter');
+        };
+    }, [currentUser.budget])
 
     const centerTableElements = 'text-center align-middle';
     useEffect(() => { 
@@ -83,9 +101,31 @@ export default function Homepage() {
         });
         }
     }, [updateBudgetFlag]);
+    useEffect(() => {
+        if (updateLimitFlag) {
+            gsap.to('.update-limit', {
+            y: 0,
+            opacity: 1,
+            visibility: 'visible',
+            duration: 0.2,
+            ease: "none"
+            });
+        } else {
+            gsap.to('.update-limit', {
+            y: -100,
+            opacity: 0,
+            visibility: 'hidden',
+            duration: 0.3,
+            ease: 'none'
+        });
+        }
+    }, [updateLimitFlag]);
     const showAddProduct = () => { 
         if (updateBudgetFlag === true) { 
             setUpdateBudgetFlag(!updateBudgetFlag)
+        }
+        if (updateLimitFlag === true) { 
+            setUpdateLimitFlag(!updateLimitFlag)
         }
         setAddProductFlag(!addProductFlag);
     }
@@ -93,7 +133,19 @@ export default function Homepage() {
         if (addProductFlag === true) { 
             setAddProductFlag(!addProductFlag)
         }
+        if (updateLimitFlag === true) { 
+            setUpdateLimitFlag(!updateLimitFlag)
+        }
         setUpdateBudgetFlag(!updateBudgetFlag);
+    }
+    const showUpdateLimit = () => { 
+        if (addProductFlag === true) { 
+            setAddProductFlag(!addProductFlag)
+        }
+        if (updateBudgetFlag === true) { 
+            setUpdateBudgetFlag(!updateBudgetFlag)
+        }
+        setUpdateLimitFlag(!updateLimitFlag);
     }
     const handleProductName = (e) => { 
         setProductName(e);
@@ -143,10 +195,41 @@ export default function Homepage() {
         dispatch(removeFromTransactions({productID: id}));
         dispatch(transactionDeleted({type: e}));
         console.log(currentUser);
-        toast.success('Transactions Deleted!')
+    }
+
+    const handleShow = (item) => { 
+        setCurrentTransaction(item);
+        setDeleteConfirmation(true);
+    }
+
+    const handleClose = () => {
+        setDeleteConfirmation(false);
+        setCurrentTransaction(null);
+    }
+
+    const handleDelete = () => {
+        if (currentTransaction) { 
+            console.log(currentUser);
+            console.log('buying:', currentTransaction)
+            dispatch(reduceFromBudget({ amount: Number(currentTransaction.ProductPrice) }));  
+            dispatch(addToHistory({ item: currentTransaction }));
+            deleteProduct(currentTransaction.ProductID, '');
+            dispatch(transactionConfirmed());
+            toast.success('Transaction Confirmed!');
+        } else if (!currentTransaction) { 
+            toast.error(`no transaction data found`);
+            setDeleteConfirmation(false);
+            console.log(currentTransaction);
+            return;
+        }
+        setDeleteConfirmation(false);
     }
 
     const buyProduct = (item) => { 
+        if (currentUser.budget - item.ProductPrice < currentUser.budgetLimit) {
+            handleShow(item);
+            return;
+        }
         if(currentUser.budget - item.ProductPrice >= 0) { 
             console.log(currentUser);
             console.log('buying:', item)
@@ -162,8 +245,9 @@ export default function Homepage() {
 
     const handleBudgetSubmit = (e) => {
         e.preventDefault();
-        if (newBudget !== Number(newBudget) || addAmount !== Number(addAmount) || reduceAmount !== Number(reduceAmount)) { 
+        if (isNaN(Number(newBudget)) || isNaN(Number(addAmount)) || isNaN(Number(reduceAmount))) { 
             toast.error("Oops! You can't enter non-numerical values");
+            console.log(newBudget);
             return;
         }
         if (newBudget < 0 || addAmount < 0 || reduceAmount < 0) { 
@@ -186,6 +270,22 @@ export default function Homepage() {
             toast.success("Budget Updated Successfully!")
         } 
 
+        const handleBudgetLimitSubmit = () => { 
+            if (newBudgetLimit) {
+                dispatch(updateLimit({type: 'update', amount: newBudgetLimit}))
+            }
+            if (addLimitAmount) { 
+                dispatch(updateLimit({type: 'add', amount: addLimitAmount}))
+            }
+            if (reduceLimitAmount) {
+                dispatch(updateLimit({type: 'reduce', amount: reduceLimitAmount}))
+            }
+            setAddLimitAmount('');
+            setNewBudgetLimit('');
+            setReduceLimitAmount('');
+            toast.success('Budget Limit Expanded Successfully!');
+        }
+
     return (
         <>
         <ToastContainer position="top-center" autoClose={3000} />
@@ -198,13 +298,24 @@ export default function Homepage() {
                     </Link>
                 </Tooltip>
             </div>
-            <div className='budget-container d-flex flex-column align-items-center container my-5'>
-                <span className='display-5 fw-bold'>Your Current Budget</span>
-                <div className={`${currentUser.budget.toString().length > 7 ? 'display-1 budget-counter-large' : 'display-6 budget-counter' } my-5`}>{Number(currentUser.budget ?? 0)}</div>
-            </div>
+                <div className='row d-flex justify-content-evenly w-100'>
+                <div className='budget-container d-flex flex-column align-items-center my-5 col-md-3'>
+                    <span className='display-5 fw-bold'>Your Current Budget</span>
+                    <div className={`${Number(currentUser.budget).toString().length > 7 ? 'display-1 budget-counter-large' : 'display-6 budget-counter' } my-5`}>{Number(currentUser.budget ?? 0)}</div>
+                </div>
+                <div className='budget-container d-flex flex-column align-items-center my-5 col-md-3'>
+                    <span className='display-5 fw-bold'>Your Budget Limit</span>
+                    <div className={`${Number(currentUser.budgetLimit).toString().length > 7 ? 'display-1 budget-limit-counter-large' : 'display-6 budget-limit-counter'} 
+                    ${currentUser.budget < currentUser.budgetLimit ? 'limit-exceed' : 'limit-safe'}  my-5`}>{Number(currentUser.budgetLimit) ?? 0}</div>
+                </div>
+
+                </div>
+
+
             <div className='operations-buttons d-flex align-items-center justify-content-center gap-2'>
                 <button className={`btn ${addProductFlag ? 'btn-outline-danger' : 'btn-outline-success'}`} onClick={() => showAddProduct()}>{addProductFlag ? 'Finish Adding' : 'Add Transactions'}</button>
                 <button className={`btn ${updateBudgetFlag ? 'btn-outline-danger' : 'btn-outline-success'}`} onClick={() => showUpdateBudget()}>{updateBudgetFlag ? 'Finish Updating' : 'Update Budget'}</button>
+                <button className={`btn ${updateLimitFlag ? 'btn-outline-danger' : 'btn-outline-success'}`} onClick={() => showUpdateLimit()}>{updateLimitFlag ? 'Finish Updating' : 'Update Budget Limit'}</button>
             </div>
                 <div className={`${addProductFlag ? 'd-flex' :'d-none'} add-product my-4 align-items-center justify-content-center flex-column`}>
                     <span className='display-6 fw-bold my-4'>Add Transactions</span>
@@ -221,6 +332,15 @@ export default function Homepage() {
                         <input placeholder='Add On Your Current Budget' type='Number' className='add-product-details' value={addAmount} onChange={(e) => setAddAmount(e.target.value)}/>
                         <input placeholder='Reduce From Your Current Budget' type='Number' className='add-product-details' value={reduceAmount} onChange={(e) => setReduceAmount(e.target.value)}/>
                         <button className='btn btn-outline-primary' onClick={(e) => handleBudgetSubmit(e)}>Finish</button>
+                    </form>
+                </div>
+                <div className={`${updateLimitFlag ? 'd-flex' :'d-none'} update-limit my-4 align-items-center justify-content-center flex-column`}>
+                    <span className='display-6 fw-bold my-4'>Update Budget Limit</span>
+                    <form className='d-flex justify-content-center align-items-center flex-column gap-3 w-100'>
+                        <input placeholder='Enter New Budget Limit' type='number' className='add-product-details' value={newBudgetLimit} onChange={(e) => setNewBudgetLimit(e.target.value)}/>
+                        <input placeholder='Add On Your Current Budget Limit' type='Number' className='add-product-details' value={addLimitAmount} onChange={(e) => setAddLimitAmount(e.target.value)}/>
+                        <input placeholder='Reduce From Your Current Budget Limit' type='Number' className='add-product-details' value={reduceLimitAmount} onChange={(e) => setReduceLimitAmount(e.target.value)}/>
+                        <button className='btn btn-outline-primary' onClick={() => handleBudgetLimitSubmit()}>Finish</button>
                     </form>
                 </div>
             <div className='products-to-buy my-5 container d-flex flex-column justify-content-center align-items-center'>
@@ -240,6 +360,20 @@ export default function Homepage() {
                     {showTransactions()}
                 </tbody>
                 </table>
+                <Modal show = {deleteConfirmation} onHide={handleClose} centered>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Target Limit Warning</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>You Are About To Exceed Your Target Limit, Are You Sure You Want To Continue?</Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={handleClose}>
+                            Cancel
+                        </Button>
+                        <Button variant="danger" onClick={handleDelete}>
+                            Continue
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
             </div>
         </>
     )

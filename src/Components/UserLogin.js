@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { use, useEffect, useState } from "react"
 import { GoEye } from "react-icons/go";
 import { GoEyeClosed } from "react-icons/go";
 import { GoAlertFill } from "react-icons/go";
@@ -17,6 +17,7 @@ export default function UserLogin() {
     const [usernameErrorStatus, setUsernameErrorStatus] = useState(false);
     const [passwordErrorStatus, setPasswordErrorStatus] = useState(false);
     const dispatch = useDispatch();
+    const currentUser = useSelector((state) => state.userData.currentUserData);
     const existingAccounts = useSelector((state) => state.userData.accounts);
     useEffect(() => {
         try { 
@@ -45,6 +46,7 @@ export default function UserLogin() {
                     dispatch(setCurrentUser(existingAccounts[i].userID));
                     console.log(existingAccounts[i].userID);
                     console.log(existingAccounts);
+                    console.log(currentUser);
                     userNotFound = false;
                     break;
                 }
@@ -61,7 +63,7 @@ export default function UserLogin() {
                 setUsernameErrorStatus(false);
             }, 5000);
         } else if (password === '') {
-            e.preventDefault();
+            e.preventDefault(); 
             setPasswordErrorStatus(true);
             setTimeout(() => {
                 setPasswordErrorStatus(false);

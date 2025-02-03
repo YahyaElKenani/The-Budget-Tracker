@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { toast } from "react-toastify";
 
 const initState = {
     name: "", 
@@ -20,13 +21,17 @@ const userSlice = createSlice({
     initialState: initState,
     reducers: { 
         updateUsername: (state, action) => {
-            const {userID, newName} = action.payload;
-            const account = state.accounts.find((acc) => acc.id !== userID) || null;
+            const account = state.accounts.find((acc) => acc.userID === state.currentUserData.id) || null;
+            state.currentUserData.username = action.payload;
             if (account) { 
-                account.userName = newName;
+                account.userName = action.payload;
+                const savedAccounts = JSON.parse(localStorage.getItem('accounts')) || [];
+                const updatedAccounts = savedAccounts.map ((savedAcc) => savedAcc.userID === account.userID
+                ? {...savedAcc, userName: action.payload}
+                : savedAcc)
+                localStorage.setItem('accounts', JSON.stringify(updatedAccounts))
             }
-            state.currentUserData.username = newName;
-        }, 
+                    }, 
         updateBudget: (state, action) => { 
             const { amount } = action.payload;
             // state.currentUserData = { 
@@ -129,6 +134,7 @@ const userSlice = createSlice({
             if (account && type === 'delete') {
                 if (!account.transactionsDeleted || isNaN(account.transactionsDeleted)) {
                     account.transactionsDeleted = 0;
+                    toast.success('Transaction Deleted!')
                 }
                 account.transactionsDeleted += 1;
                 if (!state.currentUserData.transactionsDeleted) {
@@ -150,9 +156,13 @@ const userSlice = createSlice({
             state.currentUserData = { 
                 username: newAccount.userName,
                 id: newAccount.userID,
-                budget: newAccount.userBudget,
+                budget: Number(newAccount.userBudget),
+                budgetLimit: newAccount.budgetLimit,
                 transactionsList: [],
                 transactionsHistory: [],
+                numberOfTransactions: newAccount.numberOfTransactions,
+                transactionsConfirmed: newAccount.transactionsConfirmed,
+                transactionsDeleted: newAccount.transactionsDeleted,
             }
             localStorage.setItem('accounts', JSON.stringify(newAccount));
         },
@@ -173,7 +183,8 @@ const userSlice = createSlice({
                 state.currentUserData = {
                     username: account.userName,
                     id: account.userID,
-                    budget: account.budget,
+                    budget: account.userBudget || 0,
+                    budgetLimit: account.budgetLimit || 0,
                     transactionsList: account.transactionsList || [],
                     transactionsHistory: account.budgetHistory || [],
                     numberOfTransactions: account.numberOfTransactions || 0,
@@ -184,6 +195,30 @@ const userSlice = createSlice({
         }, 
         createNewAccounts : (state, action) => { 
             state.accounts = action.payload;
+        },
+        updateLimit: (state, action) => {
+            const {type, amount} = action.payload;
+            const account = state.accounts.find((acc) => acc.userID === state.currentUserData.id)
+            if (!account) { 
+                return;
+            }
+            if (type === 'update') {
+                state.currentUserData.budgetLimit = amount;
+                account.budgetLimit = amount;
+            } else if (type === 'add') { 
+                state.currentUserData.budgetLimit += amount;
+                account.budgetLimit += amount;
+            } else if (type === 'reduce') { 
+                state.currentUserData.budgetLimit -= amount;
+                account.budgetLimit -= amount;
+            }
+            const savedAccounts = JSON.parse(localStorage.getItem('accounts')) || [];
+            const updatedAccounts = savedAccounts.map(savedAcc => 
+                savedAcc.userID === account.userID 
+                    ? { ...savedAcc, budgetLimit: account.budgetLimit }
+                    : savedAcc
+                    )
+                    localStorage.setItem('accounts', JSON.stringify(updatedAccounts));
         }
     }
 });
@@ -203,7 +238,8 @@ export const {
     addTransactionToAccount,
     clearTransactionsFromAccount,
     setCurrentUser,
-    createNewAccounts
+    createNewAccounts,
+    updateLimit
 } = userSlice.actions;
 
 export default userSlice.reducer;

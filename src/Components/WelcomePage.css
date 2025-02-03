@@ -4,11 +4,11 @@ body {
 
 .form-container { 
     top: 50%;
-    transform: translateY(40%);
+    transform: translateY(30%);
 }
 
 .site-title { 
-    transform: translateY(25%);
+    transform: translateY(25%);  
     font-weight: bold;
 }
 
@@ -101,7 +101,8 @@ body {
     text-decoration: none;
 }
 
-.budget-counter { 
+.budget-counter,
+.budget-limit-counter { 
     height: 200px;
     width: 200px;
     display: flex;
@@ -111,7 +112,13 @@ body {
     border-radius: 50%;
 }
 
-.budget-counter-large { 
+.budget-limit-counter,
+.budget-limit-counter-large { 
+    border: .5px solid rgb(219, 52, 52) !important;
+}
+
+.budget-counter-large,
+.budget-limit-counter-large { 
     height: 500px;
     width: 500px;
     display: flex;
@@ -174,7 +181,7 @@ table {
 
 .edit-name:focus { 
     outline: none;
-    transform: scale(1.2);
+    transform: scale(1.1);
 }
 
 .add-product { 
@@ -191,16 +198,24 @@ table {
 }
 
 .edit-icon { 
-    background-color: white;
+    background-color: rgba(205, 201, 201, 0.504);
     padding: 5px;
     border-radius: 50%;
+    cursor: pointer;
+    opacity: 1;
+    transition: .2s all ease !important;
+}
+
+.edit-icon:hover { 
+    opacity: .5;
 }
 
 .account-details {
     margin-right: 5.75rem !important;
 }
 
-.budget-counter-profile { 
+.budget-counter-profile,
+.budget-limit-counter-profile { 
     height: 225px;
     width: 225px;
     display: flex;
@@ -211,6 +226,67 @@ table {
     font-size: 4rem;
 }
 
+.budget-limit-counter-profile { 
+    border: .5px solid rgb(219, 52, 52) !important;
+}
+
+.limit-safe { 
+    border: .5px solid rgb(11, 166, 107) !important;
+}
+
+.limit-exceed { 
+    border: .5px solid rgb(219, 52, 52) !important;
+}
+
 .disabled { 
     cursor: none;
 }
+
+@media (max-width: 991px) { 
+    .budget-counter-profile, 
+    .budget-limit-counter-profile { 
+        width: 150px;
+        height: 150px;
+        font-size: 2.5rem
+    }
+}
+
+@media (max-width: 1204px) { 
+    .large-profile-logo { 
+        display: none !important;
+    }
+    .account-data { 
+        margin-left: 3rem;
+    }
+    .account-details {
+        margin-right: -7.25rem !important;
+    }
+}
+
+@media (max-width: 500px) { 
+    .budget-counter-profile, 
+    .budget-limit-counter-profile { 
+        width: 100px;
+        height: 100px;
+        font-size: 1.5rem;
+        margin-left: 1rem !important;
+    }
+    .account-details {
+        margin-right: 8.75rem !important;
+    }
+}
+
+
+@media (max-width: 767px) { 
+    .account-details {
+        margin-right: 0.75rem !important;
+    }
+}
+
+@media (max-width: 450px) { 
+    .account-details {
+        margin-right: 4.75rem !important;
+    }
+}
+
+

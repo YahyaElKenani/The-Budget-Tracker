@@ -14,11 +14,9 @@ export default function CreateAccount() {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [budgetLimit, setBudgetLimit] = useState(0);
     const [confirmPassword, setConfirmPassword] = useState('');
     const [budget, setBudget] = useState(0);
-    const [usernameError, setUsernameError] = useState(false);
-    const [passwordError, setPasswordError] = useState(false);
-    const [confirmPasswordError, setConfirmPasswordError] = useState(false);
     const [existingAccounts, setExistingAccounts] = useState([]); 
     const alertRef = useRef(null);
     const dispatch = useDispatch();
@@ -44,15 +42,10 @@ export default function CreateAccount() {
         localStorage.setItem('accounts', JSON.stringify(userData.accounts))
     }, [userData.accounts])
 
-    const usernameErrorMsg = { 
-        display: usernameError ? 'inline' : 'none'
+    const handleBudgetLimit = (e) => { 
+        setBudgetLimit(e);
     }
-    const passwordErrorMsg = { 
-        display: passwordError ? 'inline' : 'none'
-    }
-    const confirmPasswordErrorMsg = { 
-        display: confirmPasswordError ? 'inline' : 'none'
-    }
+
     const togglePasswordStatus = () => { 
         setShowPassword(!showPassword);
     }
@@ -115,6 +108,7 @@ export default function CreateAccount() {
                     userName: username,
                     userPassword: password,
                     userBudget: budget,
+                    budgetLimit: budgetLimit,
                     transactionsList: [],
                     budgetHistory: [],
                     numberOfTransactions: 0,
@@ -144,21 +138,20 @@ export default function CreateAccount() {
                 <span className="display-4 my-4 text-center form-title d-flex align-items-center justify-content-center fw-bold">Create New Account</span>
                         {/* <div className="alert alert-danger align-items-center" role="alert" style={{display: userAlreadyExists ? 'flex' : 'none'}}><GoAlertFill className="me-2"/> User Already Exists</div> */}
                 <input name="username" placeholder="Enter Username" className="m-4 p-3 fs-5" onChange={(e) => {setUsername(e.target.value)}} value={username}/>
-                <small className="mx-4 input-error" style={usernameErrorMsg}>* Username Must Be 6-20 Letters</small>
                 <div className="m-4 fs-5 d-flex align-items-center position-relative">
                     <input type={showPassword ? 'text' : 'password'} name="password" placeholder="Enter Password" className="p-3 w-100 h-100"
                     onChange={(e) => {setPassword(e.target.value)}} value={password}/>
                     <span className="show-password position-absolute"onClick={() => {togglePasswordStatus()}}>{showPassword ? <GoEyeClosed /> : <GoEye/> }</span>
                 </div>
-                <small className="mx-4 input-error" style={passwordErrorMsg}>* Password Must Be 12-20 Letters</small>
                 <div className="m-4 fs-5 d-flex align-items-center position-relative">
                     <input name="password confirmation" type={showConfirmPassword ? 'text' : 'password'} placeholder="Confirm Password" className="p-3 w-100 h-100"
                     onChange={(e) => {setConfirmPassword(e.target.value)}} value={confirmPassword}/>
                     <span className="show-password position-absolute"onClick={() => {toggleConfirmPasswordStatus()}}> {showConfirmPassword ? <GoEyeClosed /> : <GoEye/> } </span>
                 </div>
-                <small className="mx-4 input-error" style={confirmPasswordErrorMsg}>* Invalid Password Confirmation</small>
                 <input type="number" name="initial budget" placeholder="Enter Your Initial Budget (Optional)" className="m-4 p-3 fs-5"
                 onChange={(e) => {setBudget(e.target.value)}}/>
+                <input type="number" name="targer budget" placeholder="Enter Your Budget Limit (Optional)" className="m-4 p-3 fs-5" 
+                onChange={(e) => {handleBudgetLimit(e.target.value)}}/>
                 <Link to={'../homepage'} className="btn btn-success m-4" onClick={(e) => {handleSumbit(e)}}>Submit</Link>
             </form>
         </div>
