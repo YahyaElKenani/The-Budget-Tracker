@@ -168,6 +168,9 @@ table {
     border-radius: 5px;
     transition: .5s all ease;
     color: white;
+    height: 2rem;
+    width: 100%;
+    font-size: 1.3rem;
 }
 
 .add-product-details::placeholder { 
@@ -282,6 +285,25 @@ table {
 @media (max-width: 450px) { 
     .account-details {
         margin-right: 4.75rem !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .display-5 {
+        font-size: 2rem; /* Adjust font size for smaller screens */
+    }
+    .display-6 {
+        font-size: 1.5rem; /* Adjust font size for smaller screens */
+    }
+    .budget-counter, .budget-limit-counter {
+        font-size: 2rem; /* Adjust font size for smaller screens */
+    }
+    .operations-buttons .btn {
+        width: 100%; /* Make buttons full width on smaller screens */
+        margin-bottom: 0.5rem; /* Add spacing between stacked buttons */
+    }
+    .add-product-details {
+        width: 100%; /* Make input fields full width on smaller screens */
     }
 }
 

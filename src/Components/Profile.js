@@ -87,7 +87,7 @@ export default function Profile() {
                                 <div className="d-flex flex-column col-sm-10 col-md-9 col-lg-9 account-data">
                                     <div className={`${editName ? 'flex-column gap-2' : ''}  fs-3 fs-sm-4 fw-bold me-5 mb-3 d-flex justify-content-between align-items-center update-name-field`}>
                                         {editName ? 
-                                        <input type="text" placeholder="Enter New Name" className="edit-name p-2" onChange={(e) => updateName(e.target.value)}/> 
+                                        <input type="text" placeholder="Enter New Name" className="edit-name p-2 responsive-placeholder" onChange={(e) => updateName(e.target.value)}/> 
                                         : <span>Name : {currentUser.username} </span>}
                                         {editName ? 
                                         <div className="d-flex justify-content-between">

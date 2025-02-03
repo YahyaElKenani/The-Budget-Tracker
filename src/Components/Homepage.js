@@ -351,28 +351,28 @@ export default function Homepage() {
                 <div className={`${addProductFlag ? 'd-flex' :'d-none'} add-product my-4 align-items-center justify-content-center flex-column`}>
                     <span className='display-6 fw-bold my-4'>Add Transactions</span>
                     <form className='d-flex justify-content-center align-items-center flex-column gap-3 w-100'>
-                        <input placeholder='Enter Transaction Name' type='text' className='add-product-details' value={productName} onChange={(e) => handleProductName(e.target.value)}/>
-                        <input placeholder='Enter Transaction Value' type='Number' className='add-product-details' value={productPrice} onChange={(e) => handleProductPrice(e.target.value)}/>
+                        <input placeholder='Enter Transaction Name' type='text' className='add-product-details responsive-placeholder' value={productName} onChange={(e) => handleProductName(e.target.value)}/>
+                        <input placeholder='Enter Transaction Value' type='Number' className='add-product-details responsive-placeholder' value={productPrice} onChange={(e) => handleProductPrice(e.target.value)}/>
                         <button className='btn btn-outline-primary' onClick={(e) => handleSubmit(e)}>Submit</button>
                     </form>
                 </div>
                 <div className={`${updateBudgetFlag ? 'd-flex' :'d-none'} update-budget my-4 align-items-center justify-content-center flex-column`}>
                     <span className='display-6 fw-bold my-4'>Update Budget</span>
                     <form className='d-flex justify-content-center align-items-center flex-column gap-3 w-100'>
-                        <input placeholder='Enter New Budget' type='number' className='add-product-details' value={newBudget} onChange={(e) => setNewBudget(e.target.value)} onKeyDown={preventInvalidChars}/>
-                        <input placeholder='Add On Your Current Budget' type='Number' className='add-product-details' value={addAmount} onChange={(e) => setAddAmount(e.target.value)} onKeyDown={preventInvalidChars}/>
-                        <input placeholder='Reduce From Your Current Budget' type='Number' className='add-product-details' value={reduceAmount} onChange={(e) => setReduceAmount(e.target.value)} onKeyDown={preventInvalidChars}/>
+                        <input placeholder='Enter New Budget' type='number' className='add-product-details responsive-placeholder' value={newBudget} onChange={(e) => setNewBudget(e.target.value)} onKeyDown={preventInvalidChars}/>
+                        <input placeholder='Add On Your Current Budget' type='Number' className='add-product-details responsive-placeholder' value={addAmount} onChange={(e) => setAddAmount(e.target.value)} onKeyDown={preventInvalidChars}/>
+                        <input placeholder='Reduce From Your Current Budget' type='Number' className='add-product-details responsive-placeholder' value={reduceAmount} onChange={(e) => setReduceAmount(e.target.value)} onKeyDown={preventInvalidChars}/>
                         <button className='btn btn-outline-primary' onClick={(e) => handleBudgetSubmit(e)}>Finish</button>
                     </form>
                 </div>
                 <div className={`${updateLimitFlag ? 'd-flex' :'d-none'} update-limit my-4 align-items-center justify-content-center flex-column`}>
                     <span className='display-6 fw-bold my-4'>Update Budget Limit</span>
                     <form className='d-flex justify-content-center align-items-center flex-column gap-3 w-100'>
-                        <input placeholder='Enter New Budget Limit' type='number' className='add-product-details' value={newBudgetLimit}
+                        <input placeholder='Enter New Budget Limit' type='number' className='add-product-details responsive-placeholder' value={newBudgetLimit}
                         onChange={(e) => setNewBudgetLimit(e.target.value)} onKeyDown={preventInvalidChars}/>
-                        <input placeholder='Add On Your Current Budget Limit' type='Number' className='add-product-details' value={addLimitAmount}
+                        <input placeholder='Add On Your Current Budget Limit' type='Number' className='add-product-details responsive-placeholder' value={addLimitAmount}
                         onChange={(e) => setAddLimitAmount(e.target.value)} onKeyDown={preventInvalidChars}/>
-                        <input placeholder='Reduce From Your Current Budget Limit' type='Number' className='add-product-details' value={reduceLimitAmount} 
+                        <input placeholder='Reduce From Your Current Budget Limit' type='Number' className='add-product-details responsive-placeholder' value={reduceLimitAmount} 
                         onChange={(e) => setReduceLimitAmount(e.target.value)} onKeyDown={preventInvalidChars}/>
                         <button className='btn btn-outline-primary' onClick={(e) => handleBudgetLimitSubmit(e)}>Finish</button>
                     </form>
@@ -380,20 +380,22 @@ export default function Homepage() {
             <div className='products-to-buy my-5 container d-flex flex-column justify-content-center align-items-center'>
                 <div className='container'><hr></hr></div>
                 <span className='display-5 fw-bold my-4'>Your Transactions</span>
-            <table className="table table-borderless fs-5">
-                <thead className="table-dark ">
-                    <tr>
-                    <th scope="col" className={centerTableElements}>Name</th>
-                    <th scope="col" className={centerTableElements}>Price</th>
-                    <th scope="col" className={centerTableElements}>Remaining</th>
-                    <th scope="col" className={centerTableElements}>Confirm Buy</th>
-                    <th scope="col" className={centerTableElements}>Delete</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {showTransactions()}
-                </tbody>
-                </table>
+                <div className='table-responsive w-100'>
+                    <table className="table table-borderless fs-5 w-100">
+                    <thead className="table-dark ">
+                        <tr>
+                        <th scope="col" className={centerTableElements}>Name</th>
+                        <th scope="col" className={centerTableElements}>Price</th>
+                        <th scope="col" className={centerTableElements}>Remaining</th>
+                        <th scope="col" className={centerTableElements}>Confirm Buy</th>
+                        <th scope="col" className={centerTableElements}>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {showTransactions()}
+                    </tbody>
+                    </table>
+                </div>
                 <Modal show = {deleteConfirmation} onHide={handleClose} centered>
                     <Modal.Header closeButton>
                         <Modal.Title>Target Limit Warning</Modal.Title>
