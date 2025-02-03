@@ -31,9 +31,7 @@ export default function Homepage() {
     const transactions = useSelector((state) => state.userData.currentUserData.transactionsList); 
     
 
-
     useEffect(() => {
-        localStorage.setItem('currentAccount', JSON.stringify(userData));
         gsap.to('.site-logo', {rotate: 360, duration: 5, transformOrigin: 'center center', repeat: -1, ease:"none"});
         gsap.to('.budget-counter', {
             duration: 1,
@@ -42,6 +40,11 @@ export default function Homepage() {
             yoyo: true, // Go back and forth
             ease: 'power1.inOut'
         });
+        console.log(userData.accounts);
+        console.log(currentUser);
+    }, [])
+
+    useEffect(() => {
         gsap.killTweensOf('.budget-limit-counter');
         gsap.to('.budget-limit-counter', {
             duration: 1,
@@ -50,14 +53,12 @@ export default function Homepage() {
             yoyo: true, // Go back and forth
             ease: 'power1.inOut'
         });
-        console.log(userData.accounts);
-        console.log(currentUser);
         return () => {
             gsap.killTweensOf('.site-logo');
             gsap.killTweensOf('.budget-counter');
             gsap.killTweensOf('.budget-limit-counter');
         };
-    }, [currentUser.budget])
+    }, [currentUser.budget, currentUser.budgetLimit])
 
     const centerTableElements = 'text-center align-middle';
     useEffect(() => { 
@@ -270,21 +271,60 @@ export default function Homepage() {
             toast.success("Budget Updated Successfully!")
         } 
 
-        const handleBudgetLimitSubmit = () => { 
+        const isValidNumber = (value) => {
+            // Check if the value is a valid number and not empty
+            return !isNaN(value) && value !== '' && value !== null;
+        };
+
+        const preventInvalidChars = (e) => {
+            if (['e', 'E', '+', '-', '.'].includes(e.key)) {
+                e.preventDefault();
+            }
+        };
+
+        const handleBudgetLimitSubmit = (e) => { 
+            e.preventDefault();
             if (newBudgetLimit) {
-                dispatch(updateLimit({type: 'update', amount: newBudgetLimit}))
+                if (newBudgetLimit < 0  || !isValidNumber(newBudgetLimit)) { 
+                    console.log(newBudgetLimit, Number(newBudgetLimit));
+                    toast.error(`Invalid Input!`)
+                    return
+                } else { 
+                    dispatch(updateLimit({type: 'update', amount: Number(newBudgetLimit)}));
+                    setAddLimitAmount('');
+                    setReduceLimitAmount('')
+                }
             }
             if (addLimitAmount) { 
-                dispatch(updateLimit({type: 'add', amount: addLimitAmount}))
+                if (addLimitAmount < 0 || !isValidNumber(addLimitAmount)) { 
+                    toast.error(`Invalid Input!`);
+                    return;
+                } else { 
+                    dispatch(updateLimit({type: 'add', amount: Number(addLimitAmount)}))
+                    setNewBudgetLimit('')
+                    setReduceLimitAmount('')
+                }
             }
             if (reduceLimitAmount) {
-                dispatch(updateLimit({type: 'reduce', amount: reduceLimitAmount}))
+                if (reduceLimitAmount < 0 || !isValidNumber(reduceLimitAmount)) { 
+                    toast.error(`Invalid Input!`);
+                    return;
+                } else if (currentUser.budgetLimit - reduceLimitAmount < 0 ) {
+                    toast.error (`Invalid Input!`);
+                    return;
+                }
+                else { 
+                    dispatch(updateLimit({type: 'reduce', amount: Number(reduceLimitAmount)}))
+                    setAddLimitAmount('')
+                    setNewBudgetLimit('')
+                }
             }
             setAddLimitAmount('');
             setNewBudgetLimit('');
             setReduceLimitAmount('');
-            toast.success('Budget Limit Expanded Successfully!');
+            toast.success('Budget Limit Updated Successfully!');
         }
+
 
     return (
         <>
@@ -328,19 +368,22 @@ export default function Homepage() {
                 <div className={`${updateBudgetFlag ? 'd-flex' :'d-none'} update-budget my-4 align-items-center justify-content-center flex-column`}>
                     <span className='display-6 fw-bold my-4'>Update Budget</span>
                     <form className='d-flex justify-content-center align-items-center flex-column gap-3 w-100'>
-                        <input placeholder='Enter New Budget' type='number' className='add-product-details' value={newBudget} onChange={(e) => setNewBudget(e.target.value)}/>
-                        <input placeholder='Add On Your Current Budget' type='Number' className='add-product-details' value={addAmount} onChange={(e) => setAddAmount(e.target.value)}/>
-                        <input placeholder='Reduce From Your Current Budget' type='Number' className='add-product-details' value={reduceAmount} onChange={(e) => setReduceAmount(e.target.value)}/>
+                        <input placeholder='Enter New Budget' type='number' className='add-product-details' value={newBudget} onChange={(e) => setNewBudget(e.target.value)} onKeyDown={preventInvalidChars}/>
+                        <input placeholder='Add On Your Current Budget' type='Number' className='add-product-details' value={addAmount} onChange={(e) => setAddAmount(e.target.value)} onKeyDown={preventInvalidChars}/>
+                        <input placeholder='Reduce From Your Current Budget' type='Number' className='add-product-details' value={reduceAmount} onChange={(e) => setReduceAmount(e.target.value)} onKeyDown={preventInvalidChars}/>
                         <button className='btn btn-outline-primary' onClick={(e) => handleBudgetSubmit(e)}>Finish</button>
                     </form>
                 </div>
                 <div className={`${updateLimitFlag ? 'd-flex' :'d-none'} update-limit my-4 align-items-center justify-content-center flex-column`}>
                     <span className='display-6 fw-bold my-4'>Update Budget Limit</span>
                     <form className='d-flex justify-content-center align-items-center flex-column gap-3 w-100'>
-                        <input placeholder='Enter New Budget Limit' type='number' className='add-product-details' value={newBudgetLimit} onChange={(e) => setNewBudgetLimit(e.target.value)}/>
-                        <input placeholder='Add On Your Current Budget Limit' type='Number' className='add-product-details' value={addLimitAmount} onChange={(e) => setAddLimitAmount(e.target.value)}/>
-                        <input placeholder='Reduce From Your Current Budget Limit' type='Number' className='add-product-details' value={reduceLimitAmount} onChange={(e) => setReduceLimitAmount(e.target.value)}/>
-                        <button className='btn btn-outline-primary' onClick={() => handleBudgetLimitSubmit()}>Finish</button>
+                        <input placeholder='Enter New Budget Limit' type='number' className='add-product-details' value={newBudgetLimit}
+                        onChange={(e) => setNewBudgetLimit(e.target.value)} onKeyDown={preventInvalidChars}/>
+                        <input placeholder='Add On Your Current Budget Limit' type='Number' className='add-product-details' value={addLimitAmount}
+                        onChange={(e) => setAddLimitAmount(e.target.value)} onKeyDown={preventInvalidChars}/>
+                        <input placeholder='Reduce From Your Current Budget Limit' type='Number' className='add-product-details' value={reduceLimitAmount} 
+                        onChange={(e) => setReduceLimitAmount(e.target.value)} onKeyDown={preventInvalidChars}/>
+                        <button className='btn btn-outline-primary' onClick={(e) => handleBudgetLimitSubmit(e)}>Finish</button>
                     </form>
                 </div>
             <div className='products-to-buy my-5 container d-flex flex-column justify-content-center align-items-center'>

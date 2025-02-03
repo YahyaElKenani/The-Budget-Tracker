@@ -53,21 +53,42 @@ const userSlice = createSlice({
         }, 
         addOnBudget: (state, action) => { 
             const { amount } = action.payload;
-            state.currentUserData.budget += amount;
+            if (amount < 0) return;
+    
             const account = state.accounts.find(acc => acc.userID === state.currentUserData.id);
             if (account) {
-                account.budget += amount;
+                // Update both account and currentUserData
+                const newBudget = Number(account.budget) + Number(amount);
+                account.budget = newBudget;
+                state.currentUserData.budget = newBudget;
+                
+                // Update localStorage
+                const savedAccounts = JSON.parse(localStorage.getItem('accounts')) || [];
+                const updatedAccounts = savedAccounts.map(savedAcc => 
+                    savedAcc.userID === account.userID 
+                        ? { ...savedAcc, budget: newBudget }
+                        : savedAcc
+                );
+                localStorage.setItem('accounts', JSON.stringify(updatedAccounts));
             }
-            state.currentUserData.budget = account.budget;
-        }, 
+        },
 
         reduceFromBudget: (state, action) => {
             const { amount } = action.payload;
-            state.currentUserData.budget -= amount;
+            if (amount < 0) return;
             console.log('Reducing budget by:', amount);
             const account = state.accounts.find(acc => acc.userID === state.currentUserData.id);
             if (account) {
-                account.budget -= amount;
+                const newBudget = Number(account.budget) - Number(amount)
+                account.budget = newBudget;
+                state.currentUserData.budget = newBudget;
+                const savedAccounts = JSON.parse(localStorage.getItem('accounts')) || [];
+                const updatedAccounts = savedAccounts.map(savedAcc => 
+                    savedAcc.userID === account.userID 
+                        ? { ...savedAcc, budget: newBudget }
+                        : savedAcc
+                );
+                localStorage.setItem('accounts', JSON.stringify(updatedAccounts));
             }
             
             console.log('Updated budget:', state.currentUserData.budget);
@@ -76,71 +97,152 @@ const userSlice = createSlice({
         addToHistory: (state, action) => {
             const { item } = action.payload;
             const account = state.accounts.find(acc => acc.userID === state.currentUserData.id);
+            
             if (account) {
+                // Initialize histories if they don't exist
                 if (!account.budgetHistory) {
                     account.budgetHistory = [];
                 }
+                
+                // Add to both account history and current user history
                 account.budgetHistory.push(item);
+                state.currentUserData.transactionsHistory.push(item);
+    
+                // Update localStorage
+                const savedAccounts = JSON.parse(localStorage.getItem('accounts')) || [];
+                const updatedAccounts = savedAccounts.map(savedAcc => 
+                    savedAcc.userID === account.userID 
+                        ? { ...savedAcc, budgetHistory: account.budgetHistory }
+                        : savedAcc
+                );
+                localStorage.setItem('accounts', JSON.stringify(updatedAccounts));
             }
-            state.currentUserData.transactionsHistory.push(item);
         },
         removeFromTransactions: (state, action) => {
             const { productID } = action.payload;
             const account = state.accounts.find(acc => acc.userID === state.currentUserData.id);
+            
             if (account?.transactionsList) { 
+                // Remove from both account and current user
                 account.transactionsList = account.transactionsList.filter(
                     transaction => transaction.ProductID !== productID
                 );
+                state.currentUserData.transactionsList = state.currentUserData.transactionsList.filter(
+                    transaction => transaction.ProductID !== productID
+                );
+    
+                // Update localStorage
+                const savedAccounts = JSON.parse(localStorage.getItem('accounts')) || [];
+                const updatedAccounts = savedAccounts.map(savedAcc => 
+                    savedAcc.userID === account.userID 
+                        ? { ...savedAcc, transactionsList: account.transactionsList }
+                        : savedAcc
+                );
+                localStorage.setItem('accounts', JSON.stringify(updatedAccounts));
             }
-            state.currentUserData.transactionsList = state.currentUserData.transactionsList.filter((transaction) => transaction.ProductID !== productID);
         },
         deleteTransactionsHistory: (state) => { 
             const account = state.accounts.find(acc => acc.userID === state.currentUserData.id);
+            
             if (account) {
+                // Clear all transaction-related data
                 account.budgetHistory = [];
                 account.numberOfTransactions = 0;
                 account.transactionsConfirmed = 0;
                 account.transactionsDeleted = 0;
+                
+                // Clear current user data
+                state.currentUserData.numberOfTransactions = 0;
+                state.currentUserData.transactionsConfirmed = 0;
+                state.currentUserData.transactionsDeleted = 0;
+                state.currentUserData.transactionsHistory = [];
+    
+                // Update localStorage
+                const savedAccounts = JSON.parse(localStorage.getItem('accounts')) || [];
+                const updatedAccounts = savedAccounts.map(savedAcc => 
+                    savedAcc.userID === account.userID 
+                        ? { 
+                            ...savedAcc, 
+                            budgetHistory: [],
+                            numberOfTransactions: 0,
+                            transactionsConfirmed: 0,
+                            transactionsDeleted: 0
+                          }
+                        : savedAcc
+                );
+                localStorage.setItem('accounts', JSON.stringify(updatedAccounts));
             }
-            state.currentUserData.numberOfTransactions = 0
-            state.currentUserData.transactionsConfirmed = 0
-            state.currentUserData.transactionsDeleted = 0
-            state.currentUserData.transactionsHistory = [];
         },
         transactionCreated: (state) => { 
             const account = state.accounts.find(acc => acc.userID === state.currentUserData.id);
+            
             if (account) {
-                if (!account.numberOfTransactions || isNaN(account.numberOfTransactions) || account.numberOfTransactions === null) {
+                // Initialize if needed
+                if (!account.numberOfTransactions || isNaN(account.numberOfTransactions)) {
                     account.numberOfTransactions = 0;
-                } else { 
-                    account.numberOfTransactions += 1;
                 }
+                
+                // Increment counters
+                account.numberOfTransactions += 1;
+                state.currentUserData.numberOfTransactions += 1;
+    
+                // Update localStorage
+                const savedAccounts = JSON.parse(localStorage.getItem('accounts')) || [];
+                const updatedAccounts = savedAccounts.map(savedAcc => 
+                    savedAcc.userID === account.userID 
+                        ? { ...savedAcc, numberOfTransactions: account.numberOfTransactions }
+                        : savedAcc
+                );
+                localStorage.setItem('accounts', JSON.stringify(updatedAccounts));
             }
-            state.currentUserData.numberOfTransactions += 1;
-        }, 
+        },
         transactionConfirmed: (state) => { 
             const account = state.accounts.find(acc => acc.userID === state.currentUserData.id);
+            
             if (account) {
-                if (!account.transactionsConfirmed || isNaN(account.transactionsConfirmed) || account.transactionsConfirmed === null) {
+                // Initialize if needed
+                if (!account.transactionsConfirmed || isNaN(account.transactionsConfirmed)) {
                     account.transactionsConfirmed = 0;
                 }
+                
+                // Increment counters
                 account.transactionsConfirmed += 1;
+                state.currentUserData.transactionsConfirmed += 1;
+    
+                // Update localStorage
+                const savedAccounts = JSON.parse(localStorage.getItem('accounts')) || [];
+                const updatedAccounts = savedAccounts.map(savedAcc => 
+                    savedAcc.userID === account.userID 
+                        ? { ...savedAcc, transactionsConfirmed: account.transactionsConfirmed }
+                        : savedAcc
+                );
+                localStorage.setItem('accounts', JSON.stringify(updatedAccounts));
             }
-            state.currentUserData.transactionsConfirmed += 1;
-        }, 
+        },
         transactionDeleted: (state, action) => {
             const { type } = action.payload;
             const account = state.accounts.find(acc => acc.userID === state.currentUserData.id);
+            
             if (account && type === 'delete') {
+                // Initialize if needed
                 if (!account.transactionsDeleted || isNaN(account.transactionsDeleted)) {
                     account.transactionsDeleted = 0;
-                    toast.success('Transaction Deleted!')
                 }
+                
+                // Increment counters
                 account.transactionsDeleted += 1;
-                if (!state.currentUserData.transactionsDeleted) {
-                    state.currentUserData.transactionsDeleted = 0;
-                }
                 state.currentUserData.transactionsDeleted += 1;
+    
+                // Update localStorage
+                const savedAccounts = JSON.parse(localStorage.getItem('accounts')) || [];
+                const updatedAccounts = savedAccounts.map(savedAcc => 
+                    savedAcc.userID === account.userID 
+                        ? { ...savedAcc, transactionsDeleted: account.transactionsDeleted }
+                        : savedAcc
+                );
+                localStorage.setItem('accounts', JSON.stringify(updatedAccounts));
+                
+                toast.success('Transaction Deleted!');
             }
         },
         addAccount: (state, action) => { 
@@ -156,7 +258,7 @@ const userSlice = createSlice({
             state.currentUserData = { 
                 username: newAccount.userName,
                 id: newAccount.userID,
-                budget: Number(newAccount.userBudget),
+                budget: Number(newAccount.budget),
                 budgetLimit: newAccount.budgetLimit,
                 transactionsList: [],
                 transactionsHistory: [],
@@ -164,18 +266,30 @@ const userSlice = createSlice({
                 transactionsConfirmed: newAccount.transactionsConfirmed,
                 transactionsDeleted: newAccount.transactionsDeleted,
             }
-            localStorage.setItem('accounts', JSON.stringify(newAccount));
+            localStorage.setItem('accounts', JSON.stringify([...state.accounts]));
         },
         addTransactionToAccount: (state, action) => { 
             const { transaction } = action.payload;
             const account = state.accounts.find(user => user.userID === state.currentUserData.id);
+            
             if (account) { 
+                // Initialize transactionsList if it doesn't exist
                 if (!account.transactionsList) {
                     account.transactionsList = [];
                 }
+                // Add transaction to account and current user
                 account.transactionsList.push(transaction);
+                state.currentUserData.transactionsList.push(transaction);
+    
+                // Update localStorage
+                const savedAccounts = JSON.parse(localStorage.getItem('accounts')) || [];
+                const updatedAccounts = savedAccounts.map(savedAcc => 
+                    savedAcc.userID === account.userID 
+                        ? { ...savedAcc, transactionsList: account.transactionsList }
+                        : savedAcc
+                );
+                localStorage.setItem('accounts', JSON.stringify(updatedAccounts));
             }
-            state.currentUserData.transactionsList.push(transaction);
         },
         setCurrentUser: (state, action) => { 
             const account = state.accounts.find(acc => acc.userID === action.payload);
@@ -183,7 +297,7 @@ const userSlice = createSlice({
                 state.currentUserData = {
                     username: account.userName,
                     id: account.userID,
-                    budget: account.userBudget || 0,
+                    budget: account.budget || 0,
                     budgetLimit: account.budgetLimit || 0,
                     transactionsList: account.transactionsList || [],
                     transactionsHistory: account.budgetHistory || [],
@@ -206,11 +320,11 @@ const userSlice = createSlice({
                 state.currentUserData.budgetLimit = amount;
                 account.budgetLimit = amount;
             } else if (type === 'add') { 
-                state.currentUserData.budgetLimit += amount;
-                account.budgetLimit += amount;
+                state.currentUserData.budgetLimit = Number(state.currentUserData.budgetLimit) + amount;
+                account.budgetLimit = Number(account.budgetLimit) + amount;
             } else if (type === 'reduce') { 
-                state.currentUserData.budgetLimit -= amount;
-                account.budgetLimit -= amount;
+                state.currentUserData.budgetLimit = Number(state.currentUserData.budgetLimit) - amount;
+                account.budgetLimit -= Number(account.budgetLimit) - amount;
             }
             const savedAccounts = JSON.parse(localStorage.getItem('accounts')) || [];
             const updatedAccounts = savedAccounts.map(savedAcc => 

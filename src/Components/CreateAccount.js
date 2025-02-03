@@ -107,7 +107,7 @@ export default function CreateAccount() {
                     userID: uuidv4(),
                     userName: username,
                     userPassword: password,
-                    userBudget: budget,
+                    budget: budget,
                     budgetLimit: budgetLimit,
                     transactionsList: [],
                     budgetHistory: [],

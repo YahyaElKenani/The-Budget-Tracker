@@ -19,6 +19,7 @@ export default function UserLogin() {
     const dispatch = useDispatch();
     const currentUser = useSelector((state) => state.userData.currentUserData);
     const existingAccounts = useSelector((state) => state.userData.accounts);
+   
     useEffect(() => {
         try { 
             dispatch(createNewAccounts(JSON.parse(localStorage.getItem('accounts') || [])));
@@ -27,7 +28,9 @@ export default function UserLogin() {
             dispatch(createNewAccounts([]));
         } 
     }, []);
-    useEffect(() => { 
+
+
+    useEffect(() => {  
         gsap.fromTo(('.create-account-form'), {y: 100, opacity: 0}, {y: 0, opacity: 1}).delay(.2);
         gsap.fromTo(('.site-title'), {opacity: 0, y: -100}, {opacity: 1, y: 50});
     }, []);

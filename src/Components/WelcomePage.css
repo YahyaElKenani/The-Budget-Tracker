@@ -226,10 +226,6 @@ table {
     font-size: 4rem;
 }
 
-.budget-limit-counter-profile { 
-    border: .5px solid rgb(219, 52, 52) !important;
-}
-
 .limit-safe { 
     border: .5px solid rgb(11, 166, 107) !important;
 }
