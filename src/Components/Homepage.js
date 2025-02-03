@@ -30,36 +30,27 @@ export default function Homepage() {
     const currentUser = useSelector((state) => state.userData.currentUserData);
     const transactions = useSelector((state) => state.userData.currentUserData.transactionsList); 
     
-
     useEffect(() => {
-        gsap.to('.site-logo', {rotate: 360, duration: 5, transformOrigin: 'center center', repeat: -1, ease:"none"});
-        gsap.to('.budget-counter', {
+        const ctx = gsap.context(() => {
+            gsap.to(".budget-counter", {
             duration: 1,
-            boxShadow: '0 0 5px 2px rgb(52, 219, 102)',
-            repeat: -1, // Repeat indefinitely
-            yoyo: true, // Go back and forth
-            ease: 'power1.inOut'
-        });
-        console.log(userData.accounts);
-        console.log(currentUser);
-    }, [])
-
-    useEffect(() => {
-        gsap.killTweensOf('.budget-limit-counter');
-        gsap.to('.budget-limit-counter', {
+            boxShadow: "0 0 5px 2px rgb(52, 219, 102)",
+            repeat: -1,
+            yoyo: true,
+            ease: "power1.inOut",
+            });
+            gsap.to(".budget-limit-counter", {
             duration: 1,
-            boxShadow: currentUser.budget < currentUser.budgetLimit ? '0 0 5px 2px rgb(219, 52, 52)' : '0 0 5px 2px rgb(52, 219, 102)' ,
-            repeat: -1, // Repeat indefinitely
-            yoyo: true, // Go back and forth
-            ease: 'power1.inOut'
+            boxShadow: currentUser.budget < currentUser.budgetLimit ? "0 0 5px 2px rgb(219, 52, 52)" : "0 0 5px 2px rgb(52, 219, 102)",
+            repeat: -1,
+            yoyo: true,
+            ease: "power1.inOut",
         });
-        return () => {
-            gsap.killTweensOf('.site-logo');
-            gsap.killTweensOf('.budget-counter');
-            gsap.killTweensOf('.budget-limit-counter');
-        };
-    }, [currentUser.budget, currentUser.budgetLimit])
-
+        });
+    
+        return () => ctx.revert();
+      }, [currentUser.budgetLimit, currentUser.budget]); 
+    
     const centerTableElements = 'text-center align-middle';
     useEffect(() => { 
         console.log(currentUser);
