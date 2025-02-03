@@ -139,18 +139,18 @@ export default function CreateAccount() {
                         {/* <div className="alert alert-danger align-items-center" role="alert" style={{display: userAlreadyExists ? 'flex' : 'none'}}><GoAlertFill className="me-2"/> User Already Exists</div> */}
                 <input name="username" placeholder="Enter Username" className="m-4 p-3 fs-5" onChange={(e) => {setUsername(e.target.value)}} value={username}/>
                 <div className="m-4 fs-5 d-flex align-items-center position-relative">
-                    <input type={showPassword ? 'text' : 'password'} name="password" placeholder="Enter Password" className="p-3 w-100 h-100"
+                    <input type={showPassword ? 'text' : 'password'} name="password" placeholder="Enter Password" className="p-3 w-100 h-100 responsive-placeholder"
                     onChange={(e) => {setPassword(e.target.value)}} value={password}/>
                     <span className="show-password position-absolute"onClick={() => {togglePasswordStatus()}}>{showPassword ? <GoEyeClosed /> : <GoEye/> }</span>
                 </div>
                 <div className="m-4 fs-5 d-flex align-items-center position-relative">
-                    <input name="password confirmation" type={showConfirmPassword ? 'text' : 'password'} placeholder="Confirm Password" className="p-3 w-100 h-100"
+                    <input name="password confirmation" type={showConfirmPassword ? 'text' : 'password'} placeholder="Confirm Password" className="p-3 w-100 h-100 responsive-placeholder"
                     onChange={(e) => {setConfirmPassword(e.target.value)}} value={confirmPassword}/>
-                    <span className="show-password position-absolute"onClick={() => {toggleConfirmPasswordStatus()}}> {showConfirmPassword ? <GoEyeClosed /> : <GoEye/> } </span>
+                    <span className="show-password position-absolute responsive-placeholder"onClick={() => {toggleConfirmPasswordStatus()}}> {showConfirmPassword ? <GoEyeClosed /> : <GoEye/> } </span>
                 </div>
-                <input type="number" name="initial budget" placeholder="Enter Your Initial Budget (Optional)" className="m-4 p-3 fs-5"
+                <input type="number" name="initial budget" placeholder="Enter Your Initial Budget (Optional)" className="m-4 p-3 fs-5 responsive-placeholder"
                 onChange={(e) => {setBudget(e.target.value)}}/>
-                <input type="number" name="targer budget" placeholder="Enter Your Budget Limit (Optional)" className="m-4 p-3 fs-5" 
+                <input type="number" name="targer budget" placeholder="Enter Your Budget Limit (Optional)" className="m-4 p-3 fs-5 responsive-placeholder" 
                 onChange={(e) => {handleBudgetLimit(e.target.value)}}/>
                 <Link to={'../homepage'} className="btn btn-success m-4" onClick={(e) => {handleSumbit(e)}}>Submit</Link>
             </form>

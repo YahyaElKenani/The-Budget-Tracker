@@ -288,7 +288,8 @@ table {
     }
 }
 
-@media (max-width: 768px) {
+
+@media (max-width: 1400px) {
     .display-5 {
         font-size: 2rem; /* Adjust font size for smaller screens */
     }
@@ -300,11 +301,35 @@ table {
     }
     .operations-buttons .btn {
         width: 100%; /* Make buttons full width on smaller screens */
-        margin-bottom: 0.5rem; /* Add spacing between stacked buttons */
+        margin: 0 0.5rem 0.5rem 0.5rem; /* Add spacing between stacked buttons */
     }
     .add-product-details {
-        width: 100%; /* Make input fields full width on smaller screens */
+        width: 75%; /* Make input fields full width on smaller screens */
     }
 }
 
 
+.responsive-placeholder::placeholder {
+    font-size: 1rem; /* Default size for larger screens */
+}
+
+/* Adjust placeholder text size for medium screens */
+@media (max-width: 992px) {
+    .responsive-placeholder::placeholder {
+        font-size: 0.9rem; /* Slightly smaller for tablets */
+    }
+}
+
+/* Adjust placeholder text size for small screens */
+@media (max-width: 768px) {
+    .responsive-placeholder::placeholder {
+        font-size: 0.8rem; /* Smaller for mobile devices */
+    }
+}
+
+/* Adjust placeholder text size for extra small screens */
+@media (max-width: 576px) {
+    .responsive-placeholder::placeholder {
+        font-size: 0.7rem; /* Even smaller for very small devices */
+    }
+}

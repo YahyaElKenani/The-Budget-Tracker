@@ -85,12 +85,12 @@ export default function UserLogin() {
         <div className="container form-container d-flex flex-column align-items-center justify-content-center mt-5">
             <form className="d-flex flex-column create-account-form h-100">
                 <div className="display-4 my-4 text-center form-title d-flex align-items-center justify-content-center fw-bold">Log In</div>
-                <input type="text" name="username" placeholder="Enter Your Username" className="m-4 p-3 fs-5" onChange={(e) => {setUsername(e.target.value)}}/>
+                <input type="text" name="username" placeholder="Enter Your Username" className="m-4 p-3 fs-5 responsive-placeholder" onChange={(e) => {setUsername(e.target.value)}}/>
                 <small className="mx-4 input-error" style={{display: usernameErrorStatus ? "inline" : "none"}}>* Username Can't Be Empty</small>
                 <div className="m-4 fs-5 d-flex align-items-center position-relative">
-                    <input type={showPassword ? "text" : "password"} name="password" placeholder="Enter Your Password" className="p-3 w-100 h-100"
+                    <input type={showPassword ? "text" : "password"} name="password" placeholder="Enter Your Password" className="p-3 w-100 h-100 responsive-placeholder"
                     onChange={(e) => {setPassword(e.target.value)}}/>
-                    <span className="show-password position-absolute"onClick={() => {toggleShowPassword()}}>{showPassword ? <GoEyeClosed /> : <GoEye/> }</span>
+                    <span className="show-password position-absolute responsive-placeholder"onClick={() => {toggleShowPassword()}}>{showPassword ? <GoEyeClosed /> : <GoEye/> }</span>
                 </div>
                 <small className="mx-4 input-error" style={{display: passwordErrorStatus ? "inline" : "none"}}>* Password Can't Be Empty</small>
                 <Link to={"/homepage"} className="btn btn-success m-4" onClick={(e) => {handleSubmit(e)}}>Submit</Link>
