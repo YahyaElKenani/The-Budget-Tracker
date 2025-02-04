@@ -76,7 +76,6 @@ const userSlice = createSlice({
         reduceFromBudget: (state, action) => {
             const { amount } = action.payload;
             if (amount < 0) return;
-            console.log('Reducing budget by:', amount);
             const account = state.accounts.find(acc => acc.userID === state.currentUserData.id);
             if (account) {
                 const newBudget = Number(account.budget) - Number(amount)
@@ -91,7 +90,6 @@ const userSlice = createSlice({
                 localStorage.setItem('accounts', JSON.stringify(updatedAccounts));
             }
             
-            console.log('Updated budget:', state.currentUserData.budget);
         },
         
         addToHistory: (state, action) => {

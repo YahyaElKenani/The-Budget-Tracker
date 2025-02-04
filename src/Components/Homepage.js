@@ -52,9 +52,6 @@ export default function Homepage() {
       }, [currentUser.budgetLimit, currentUser.budget]); 
     
     const centerTableElements = 'text-center align-middle';
-    useEffect(() => { 
-        console.log(currentUser);
-    }, [])
     useEffect(() => {
         if (addProductFlag) {
             gsap.to('.add-product', {
@@ -157,7 +154,6 @@ export default function Homepage() {
                 ProductName: productName,
                 ProductPrice: Number(productPrice)
             }
-            console.log(currentUser.transactionsList);
             dispatch(addTransactionToAccount({transaction}));
             dispatch(transactionCreated());
             setProductName('');
@@ -186,7 +182,6 @@ export default function Homepage() {
     const deleteProduct = (id, e) => { 
         dispatch(removeFromTransactions({productID: id}));
         dispatch(transactionDeleted({type: e}));
-        console.log(currentUser);
     }
 
     const handleShow = (item) => { 
@@ -201,8 +196,6 @@ export default function Homepage() {
 
     const handleDelete = () => {
         if (currentTransaction) { 
-            console.log(currentUser);
-            console.log('buying:', currentTransaction)
             dispatch(reduceFromBudget({ amount: Number(currentTransaction.ProductPrice) }));  
             dispatch(addToHistory({ item: currentTransaction }));
             deleteProduct(currentTransaction.ProductID, '');
@@ -211,7 +204,6 @@ export default function Homepage() {
         } else if (!currentTransaction) { 
             toast.error(`no transaction data found`);
             setDeleteConfirmation(false);
-            console.log(currentTransaction);
             return;
         }
         setDeleteConfirmation(false);
@@ -223,8 +215,6 @@ export default function Homepage() {
             return;
         }
         if(currentUser.budget - item.ProductPrice >= 0) { 
-            console.log(currentUser);
-            console.log('buying:', item)
             dispatch(reduceFromBudget({ amount: Number(item.ProductPrice) }));  
             dispatch(addToHistory({ item }));
             deleteProduct(item.ProductID, '');
@@ -239,7 +229,6 @@ export default function Homepage() {
         e.preventDefault();
         if (isNaN(Number(newBudget)) || isNaN(Number(addAmount)) || isNaN(Number(reduceAmount))) { 
             toast.error("Oops! You can't enter non-numerical values");
-            console.log(newBudget);
             return;
         }
         if (newBudget < 0 || addAmount < 0 || reduceAmount < 0) { 
@@ -277,7 +266,6 @@ export default function Homepage() {
             e.preventDefault();
             if (newBudgetLimit) {
                 if (newBudgetLimit < 0  || !isValidNumber(newBudgetLimit)) { 
-                    console.log(newBudgetLimit, Number(newBudgetLimit));
                     toast.error(`Invalid Input!`)
                     return
                 } else { 

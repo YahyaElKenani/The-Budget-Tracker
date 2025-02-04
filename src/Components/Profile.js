@@ -16,9 +16,6 @@ export default function Profile() {
     const currentUser = useSelector((state) => state.userData.currentUserData)
     const dispatch = useDispatch();
     const centerTableElements = 'text-center align-middle';
-    useEffect(() => { 
-        console.log(currentUser, accounts);
-    }, [])
 
         const updateName = (e) => { 
             setNewName(e);

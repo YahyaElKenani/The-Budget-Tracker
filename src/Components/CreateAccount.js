@@ -59,7 +59,6 @@ export default function CreateAccount() {
 
     //after the user creates the account, add it to the local storage
     useEffect (() => {
-        console.log(currentUserData.budget);
         if (existingAccounts.length !== 0) { 
             localStorage.setItem('accounts', JSON.stringify(existingAccounts)); 
         }  
@@ -136,21 +135,20 @@ export default function CreateAccount() {
         <div className="container d-flex justify-content-center align-items-center form-container">
             <form className="d-flex flex-column p-3 create-account-form justify-content-center h-100">
                 <span className="display-4 my-4 text-center form-title d-flex align-items-center justify-content-center fw-bold">Create New Account</span>
-                        {/* <div className="alert alert-danger align-items-center" role="alert" style={{display: userAlreadyExists ? 'flex' : 'none'}}><GoAlertFill className="me-2"/> User Already Exists</div> */}
-                <input name="username" placeholder="Enter Username" className="m-4 p-3 fs-5" onChange={(e) => {setUsername(e.target.value)}} value={username}/>
+                <input name="username" placeholder="Enter Username" className="m-4 p-3 fs-5 responsive-placeholder create-account-input" onChange={(e) => {setUsername(e.target.value)}} value={username}/>
                 <div className="m-4 fs-5 d-flex align-items-center position-relative">
-                    <input type={showPassword ? 'text' : 'password'} name="password" placeholder="Enter Password" className="p-3 w-100 h-100 responsive-placeholder"
+                    <input type={showPassword ? 'text' : 'password'} name="password" placeholder="Enter Password" className="p-3 w-100 h-100 responsive-placeholder create-account-input"
                     onChange={(e) => {setPassword(e.target.value)}} value={password}/>
                     <span className="show-password position-absolute"onClick={() => {togglePasswordStatus()}}>{showPassword ? <GoEyeClosed /> : <GoEye/> }</span>
                 </div>
                 <div className="m-4 fs-5 d-flex align-items-center position-relative">
-                    <input name="password confirmation" type={showConfirmPassword ? 'text' : 'password'} placeholder="Confirm Password" className="p-3 w-100 h-100 responsive-placeholder"
+                    <input name="password confirmation" type={showConfirmPassword ? 'text' : 'password'} placeholder="Confirm Password" className="p-3 w-100 h-100 create-account-input responsive-placeholder"
                     onChange={(e) => {setConfirmPassword(e.target.value)}} value={confirmPassword}/>
                     <span className="show-password position-absolute responsive-placeholder"onClick={() => {toggleConfirmPasswordStatus()}}> {showConfirmPassword ? <GoEyeClosed /> : <GoEye/> } </span>
                 </div>
-                <input type="number" name="initial budget" placeholder="Enter Your Initial Budget (Optional)" className="m-4 p-3 fs-5 responsive-placeholder"
+                <input type="number" name="initial budget" placeholder="Enter Your Initial Budget (Optional)" className="m-4 p-3 fs-5 responsive-placeholder create-account-input"
                 onChange={(e) => {setBudget(e.target.value)}}/>
-                <input type="number" name="targer budget" placeholder="Enter Your Budget Limit (Optional)" className="m-4 p-3 fs-5 responsive-placeholder" 
+                <input type="number" name="targer budget" placeholder="Enter Your Budget Limit (Optional)" className="m-4 p-3 fs-5 responsive-placeholder create-account-input" 
                 onChange={(e) => {handleBudgetLimit(e.target.value)}}/>
                 <Link to={'../homepage'} className="btn btn-success m-4" onClick={(e) => {handleSumbit(e)}}>Submit</Link>
             </form>

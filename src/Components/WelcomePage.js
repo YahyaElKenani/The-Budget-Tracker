@@ -14,7 +14,6 @@ export default function WelcomePage() {
     }, [])
     const fadeButton = async (e) => { 
         await gsap.to(e, {opacity: 0, x: -100});
-        // document.querySelector('.get-started').remove();
         gsap.fromTo(loginButtonsRef.current,{opacity: 0, x: 100}, {opacity: 1, x: 0});
         setShowButtons(!showButtons);
     }

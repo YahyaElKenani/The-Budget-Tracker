@@ -47,16 +47,12 @@ export default function UserLogin() {
                 if (username === existingAccounts[i].userName && password === existingAccounts[i].userPassword) {
                     toast.success('Logged In!');
                     dispatch(setCurrentUser(existingAccounts[i].userID));
-                    console.log(existingAccounts[i].userID);
-                    console.log(existingAccounts);
-                    console.log(currentUser);
                     userNotFound = false;
                     break;
                 }
             }
             if (userNotFound) { 
                 e.preventDefault();
-                console.log(`user not existing`);
                 toast.error('User Does Not Exist');
             }
         } else if (username === '') { 

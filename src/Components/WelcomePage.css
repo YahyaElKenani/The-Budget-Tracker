@@ -318,6 +318,9 @@ table {
     .responsive-placeholder::placeholder {
         font-size: 0.9rem; /* Slightly smaller for tablets */
     }
+    /* .create-account-input::placeholder { 
+        font-size: .7rem !important ;
+    } */
 }
 
 /* Adjust placeholder text size for small screens */
@@ -331,5 +334,11 @@ table {
 @media (max-width: 576px) {
     .responsive-placeholder::placeholder {
         font-size: 0.7rem; /* Even smaller for very small devices */
+    }
+}
+
+@media (max-width: 800px) { 
+    .create-account-form { 
+        width: 100%;
     }
 }
